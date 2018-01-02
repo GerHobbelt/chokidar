@@ -1,18 +1,17 @@
 language: node_js
 node_js:
-  - '9'
-  - '8'
-  - '7'
-  - '6'
-  - '5'
-  - '4'
-  - '0.12'
-  - '0.10'
+- '8'
 os:
-  - linux
-  - osx
+- osx
 script:
-  - npm run ci-test
-after_script:
-  - npm run coveralls
-sudo: false
+- npm install
+- ls -l .
+before_deploy:
+- echo DEPLOY
+- cd node_modules
+- ls -l .
+deploy:
+  provider: releases
+  api_key:
+    secure: MkVZ8ma8IbdFqw3x0xr+nGjA/65Q8giKtiHQhYmroT60NFh3AkkRGu941S6TpRwt/+2J/GID8xAlQnZmo8Kmki7qFAj4o0dqYjDY6g4DsFRrhWyx03zOn6M07OoKksTN7s7138AQJ9CRABYOxFbSiTjko36jot1MgnRi3wEXWCx2H3CHnA5WnQjcuqz3dViJNktCOZloWEXPCo+GM9x53CS3A7sQXoyJT7oS+Jxz4mvSH78beWMTKpUX8JyHmQgp+RswRTpynvCGetdVgsT34UAVyAFiMHCL3znSD2Zl+e4w67J71Wc4DshXmXCNV9yTe2wjQLogwfq/OlzUGZd+So0naQypfsGckzeT654CqUeroIj++eD/KSXH2GeWLnZvybYC0CZkxf7+xE/n0+s3KRmSI+TjQlmhlZ5yo6kBgXYJ13dlbuARA3JSgZzs/E0UobjYr6dRs/OisgyizMedpKA4NT0pCRAbF3cnZgqVzu6GH5QaD/MuDVs98sbd+as4Ms/L8NO0/MItgfIETALc+OJEskHip/CnHcnnxSIF4Zauqg2TimKHmM9ruztQk3fKlBnlDPyD1/2pvONMYeamPneu+QkJbPyGhWendt9XJz+p2TNzZF+5lpe01BKZD84QBXfYpxDh15beWm1a6Ycvh2Q/Cv80nDj9kbCDMwR20SE=
+  skip_cleanup: true 
