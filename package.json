@@ -1,7 +1,7 @@
 {
   "name": "chokidar-webextensions",
   "description": "Chokidar - A neat wrapper around node.js fs.watch / fs.watchFile / fsevents. This fork of Chokidar library has some changes related to awaitWriteFinish.",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "keywords": [
     "fs",
     "watch",
