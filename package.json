@@ -1,6 +1,6 @@
 {
-  "name": "chokidar",
-  "description": "A neat wrapper around node.js fs.watch / fs.watchFile / fsevents.",
+  "name": "chokidar-webextensions",
+  "description": "Chokidar - A neat wrapper around node.js fs.watch / fs.watchFile / fsevents. This fork of Chokidar library has some changes related to awaitWriteFinish.",
   "version": "2.0.3",
   "keywords": [
     "fs",
@@ -11,11 +11,11 @@
     "file",
     "fsevents"
   ],
-  "homepage": "https://github.com/paulmillr/chokidar",
+  "homepage": "https://github.com/webextensions/chokidar",
   "author": "Paul Miller (http://paulmillr.com), Elan Shanker",
   "repository": {
     "type": "git",
-    "url": "https://github.com/paulmillr/chokidar.git"
+    "url": "https://github.com/webextensions/chokidar.git"
   },
   "bugs": {
     "url": "http://github.com/paulmillr/chokidar/issues"

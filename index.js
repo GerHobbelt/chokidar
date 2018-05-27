@@ -293,6 +293,25 @@ FSWatcher.prototype._throttle = function(action, path, timeout) {
 // change for 'threshold' milliseconds calls callback.
 FSWatcher.prototype._awaitWriteFinish = function(path, threshold, event, awfEmit) {
   var timeoutHandler;
+  var getY = function (x) {
+    var y;
+    y = x + 500 + Math.sqrt(1000000 + 20000 * x);
+    return parseInt(y, 10);
+    /*
+      getY(0)     => 1500
+      getY(1)     => 1510
+      getY(10)    => 1605
+      getY(100)   => 2332
+      getY(500)   => 4316
+      getY(1000)  => 6082
+      getY(10000) => 24677
+      getY(50000) => 82138
+    */
+  };
+  // "thresholdForHandlingFileTruncation" is useful for preventing issues like:
+  //     https://github.com/Microsoft/vscode/issues/9419
+  // Note that this issue can occur with various file editors, webpack, etc.
+  var thresholdForHandlingFileTruncation = getY(threshold);
 
   var fullPath = path;
   if (this.options.cwd && !isAbsolute(path)) {
@@ -314,7 +333,12 @@ FSWatcher.prototype._awaitWriteFinish = function(path, threshold, event, awfEmit
         this._pendingWrites[path].lastChange = now;
       }
 
-      if (now - this._pendingWrites[path].lastChange >= threshold) {
+      // Note that having a high value for thresholdForHandlingFileTruncation would slow down
+      // in case the file has actually been saved as a zero byte size
+      if (
+        (curStat.size && (now - this._pendingWrites[path].lastChange >= threshold)) ||
+        ((now - this._pendingWrites[path].lastChange) >= thresholdForHandlingFileTruncation)
+      ) {
         delete this._pendingWrites[path];
         awfEmit(null, curStat);
       } else {

@@ -3,4 +3,3 @@ test-fixtures
 *.bak
 *.log
 .nyc_output
-package-lock.json
