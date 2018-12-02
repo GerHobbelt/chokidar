@@ -1,11 +1,13 @@
-# Chokidar [![Mac/Linux Build Status](https://img.shields.io/travis/paulmillr/chokidar/master.svg?label=Mac%20OSX%20%26%20Linux)](https://travis-ci.org/paulmillr/chokidar) [![Windows Build status](https://img.shields.io/appveyor/ci/es128/chokidar/master.svg?label=Windows)](https://ci.appveyor.com/project/es128/chokidar/branch/master) [![Coverage Status](https://coveralls.io/repos/paulmillr/chokidar/badge.svg)](https://coveralls.io/r/paulmillr/chokidar) [![Join the chat at https://gitter.im/paulmillr/chokidar](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/paulmillr/chokidar?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+# Chokidar
 
 > A neat wrapper around node.js fs.watch / fs.watchFile / fsevents.
 
-[![NPM](https://nodei.co/npm-dl/chokidar.png)](https://nodei.co/npm/chokidar/)
-[![NPM](https://nodei.co/npm/chokidar.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/chokidar/)
+### This package provides long-term support for Chokidar at major version 1.
 
-## Why?
+This in turn provides <a href="https://github.com/electric-eloquence/gulp#readme" target="_blank">
+long-term support for gulp at major version 3</a>.
+
+## Why Chokidar?
 Node.js `fs.watch`:
 
 * Doesn't report filenames on OS X.
