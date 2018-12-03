@@ -7,6 +7,11 @@
 This in turn provides <a href="https://github.com/electric-eloquence/gulp#readme" target="_blank">
 long-term support for gulp at major version 3</a>.
 
+## Install
+- `npm install --save https://github.com/electric-eloquence/chokidar/tarball/v1-lts`
+- Or add `"gulp": "https://github.com/electric-eloquence/chokidar/tarball/v1-lts"` as a dependency in package.json.
+- Other packages depending on chokidar 1 will require or import this package if installed this way.
+
 ## Why Chokidar?
 Node.js `fs.watch`:
 
