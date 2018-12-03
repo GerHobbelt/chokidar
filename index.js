@@ -161,6 +161,8 @@ inherits(FSWatcher, EventEmitter);
 // Returns the error if defined, otherwise the value of the
 // FSWatcher instance's `closed` flag
 FSWatcher.prototype._emit = function(event, path, val1, val2, val3) {
+  this.lastEvent = {event: event, path: path};
+
   if (this.options.cwd) path = sysPath.relative(this.options.cwd, path);
   var args = [event, path];
   if (val3 !== undefined) args.push(val1, val2, val3);
