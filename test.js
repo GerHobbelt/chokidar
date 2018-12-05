@@ -23,14 +23,13 @@ function getFixturePath (subPath) {
 
 var watcher,
     watcher2,
-    usedWatchers = [],
     fixturesPath = getFixturePath(''),
     subdir = 0,
     options,
     osXFsWatch,
     win32Polling,
     slowerDelay,
-    testCount = 1,
+    testCount = 0,
     mochaIt = it;
 
 if (!fs.readFileSync(__filename).toString().match(/\sit\.only\(/)) {
