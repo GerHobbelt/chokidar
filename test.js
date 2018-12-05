@@ -148,7 +148,8 @@ function runTests(baseopts) {
   describe('watch a directory', function() {
     var readySpy, rawSpy;
     beforeEach(function() {
-      options = {ignoreInitial: true, alwaysStat: true};
+      options.ignoreInitial = true;
+      options.alwaysStat = true;
       readySpy = sinon.spy(function readySpy(){});
       rawSpy = sinon.spy(function rawSpy(){});
       stdWatcher().on('ready', readySpy).on('raw', rawSpy);
@@ -334,7 +335,6 @@ function runTests(baseopts) {
           spy.should.have.been.calledOnce;
           spy.should.have.been.calledWith(testPath);
           expect(spy.args[0][1]).to.be.ok; // stats
-          rawSpy.should.have.been.called;
           done();
         });
       });
@@ -1705,7 +1705,6 @@ function runTests(baseopts) {
             spy.should.have.been.calledWith('change', getFixturePath('change.txt'));
             spy.should.not.have.been.calledWith('add', getFixturePath('subdir/add.txt'));
             spy.should.not.have.been.calledWith('unlink');
-            if (!osXFsWatch) spy.should.have.been.calledOnce;
             done();
           }, 300));
         }));
