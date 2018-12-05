@@ -7,6 +7,12 @@
 This in turn provides <a href="https://github.com/electric-eloquence/gulp#readme" target="_blank">
 long-term support for gulp at major version 3</a>.
 
+The scoping of this package makes it an entirely different package from unscoped
+Chokidar and precludes any access from any Chokidar dependents if it installed 
+with the usual `npm install` command.
+
+Instead, follow these instructions:
+
 ## Install
 * Latest version (without Git):
   * `npm install --save https://github.com/electric-eloquence/chokidar/tarball/v1-lts`
