@@ -74,20 +74,8 @@ beforeEach(function() {
   fixturesPath = getFixturePath('');
 });
 
-function closeWatchers(done) {
-  var u;
-  while (u = usedWatchers.pop()) u.close();
-  if (done) {
-    process.env.TRAVIS && os === 'darwin' ? setTimeout(done, 500) : done();
-  }
-}
-function disposeWatcher(watcher) {
-  if (!watcher || !watcher.close) return;
-  os === 'darwin' ? usedWatchers.push(watcher) : watcher.close();
-}
 afterEach(function() {
-  disposeWatcher(watcher);
-  disposeWatcher(watcher2);
+  sinon.restore();
 });
 
 describe('chokidar', function() {
@@ -124,13 +112,18 @@ function runTests(baseopts) {
     }
   });
 
-  after(closeWatchers);
-
   beforeEach(function clean() {
     options = {};
     Object.keys(baseopts).forEach(function(key) {
       options[key] = baseopts[key]
     });
+  });
+
+  afterEach(function() {
+    if (!baseopts.useFsEvents) {
+      if (watcher && watcher.close) watcher.close();
+      if (watcher2 && watcher2.close) watcher2.close();
+    }
   });
 
   function stdWatcher() {
@@ -156,8 +149,7 @@ function runTests(baseopts) {
   describe('watch a directory', function() {
     var readySpy, rawSpy;
     beforeEach(function() {
-      options.ignoreInitial = true;
-      options.alwaysStat = true;
+      options = {ignoreInitial: true, alwaysStat: true};
       readySpy = sinon.spy(function readySpy(){});
       rawSpy = sinon.spy(function rawSpy(){});
       stdWatcher().on('ready', readySpy).on('raw', rawSpy);
@@ -166,7 +158,7 @@ function runTests(baseopts) {
       waitFor([readySpy], function() {
         readySpy.should.have.been.calledOnce;
         rawSpy = undefined;
-        closeWatchers(done);
+        done();
       });
     });
     it('should produce an instance of chokidar.FSWatcher', function() {
@@ -375,7 +367,6 @@ function runTests(baseopts) {
     });
   });
   describe('watch individual files', function() {
-    before(closeWatchers);
     it('should detect changes', function(done) {
       var spy = sinon.spy();
       var testPath = getFixturePath('change.txt');
@@ -500,7 +491,6 @@ function runTests(baseopts) {
     });
   });
   describe('watch glob patterns', function() {
-    before(closeWatchers);
     it('should correctly watch and emit based on glob input', function(done) {
       var spy = sinon.spy();
       var testPath = getFixturePath('*a*.txt');
@@ -756,7 +746,6 @@ function runTests(baseopts) {
   });
   describe('watch symlinks', function() {
     if (os === 'win32') return;
-    before(closeWatchers);
     var linkedDir;
     beforeEach(function(done) {
       linkedDir = sysPath.resolve(fixturesPath, '..', subdir + '-link');
@@ -942,7 +931,6 @@ function runTests(baseopts) {
     });
   });
   describe('watch arrays of paths/globs', function() {
-    before(closeWatchers);
     it('should watch all paths in an array', function(done) {
       var spy = sinon.spy();
       var testPath = getFixturePath('change.txt');
@@ -986,7 +974,6 @@ function runTests(baseopts) {
     });
   });
   describe('watch options', function() {
-    before(closeWatchers);
     describe('ignoreInitial', function() {
       describe('false', function() {
         beforeEach(function() { options.ignoreInitial = false; });
@@ -1654,7 +1641,6 @@ function runTests(baseopts) {
     });
   });
   describe('getWatched', function() {
-    before(closeWatchers);
     it('should return the watched paths', function(done) {
       var expected = {};
       expected[sysPath.dirname(fixturesPath)] = [subdir.toString()];
@@ -1680,7 +1666,6 @@ function runTests(baseopts) {
     });
   });
   describe('unwatch', function() {
-    before(closeWatchers);
     beforeEach(function(done) {
       options.ignoreInitial = true;
       fs.mkdir(getFixturePath('subdir'), 0x1ed, w(done));
@@ -1806,20 +1791,21 @@ function runTests(baseopts) {
       });
     });
     it('should not prevent the process from exiting', function(done) {
-        var scriptFile = getFixturePath('script.js');
-        var scriptContent = '\
-        var chokidar = require("' + __dirname.replace(/\\/g, '\\\\') + '");\n\
-        var watcher = chokidar.watch("' + scriptFile.replace(/\\/g, '\\\\') + '");\n\
-        watcher.close();\n\
-        process.stdout.write("closed");\n';
-        fs.writeFile(scriptFile, scriptContent, function (err) {
-            if (err) throw err;
-            cp.exec('node ' + scriptFile, function (err, stdout) {
-                if (err) throw err;
-                expect(stdout.toString()).to.equal('closed');
-                done();
-            });
+      var scriptFile = getFixturePath('script.js');
+      var scriptContent = '\
+var chokidar = require("' + __dirname.replace(/\\/g, '\\\\') + '");\n\
+var watcher = chokidar.watch("' + scriptFile.replace(/\\/g, '\\\\') + '");\n\
+watcher.close();\n\
+process.stdout.write("closed");\n\
+';
+      fs.writeFile(scriptFile, scriptContent, function (err) {
+        if (err) throw err;
+        cp.exec('node ' + scriptFile, function (err, stdout) {
+          if (err) throw err;
+          expect(stdout.toString()).to.equal('closed');
+          done();
         });
+      });
     });
   });
   describe('env variable option override', function() {
