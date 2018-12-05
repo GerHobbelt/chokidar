@@ -8,9 +8,18 @@ This in turn provides <a href="https://github.com/electric-eloquence/gulp#readme
 long-term support for gulp at major version 3</a>.
 
 ## Install
-- `npm install --save https://github.com/electric-eloquence/chokidar/tarball/v1-lts`
-- Or add `"gulp": "https://github.com/electric-eloquence/chokidar/tarball/v1-lts"` as a dependency in package.json.
-- Other packages depending on chokidar 1 will require or import this package if installed this way.
+* Latest version (without Git):
+  * `npm install --save https://github.com/electric-eloquence/chokidar/tarball/v1-lts`
+  * Or add `"chokidar": "https://github.com/electric-eloquence/chokidar/tarball/v1-lts"`
+    as a dependency in package.json.
+* Latest version (with Git):
+  * `npm install --save electric-eloquence/chokidar`
+* Specific version (with Git):
+  * `npm install --save electric-eloquence/chokidar#1.7.0`
+* Semver range (with Git):
+  * `npm install --save electric-eloquence/chokidar#semver:~1.7.0`
+* When installed this way, other packages depending on Chokidar will get
+  Chokidar v1 with long-term support with no further modifications.
 
 ## Why Chokidar?
 Node.js `fs.watch`:
