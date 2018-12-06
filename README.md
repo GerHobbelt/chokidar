@@ -263,6 +263,8 @@ Takes an array of strings or just one string.
 system being watched by this `FSWatcher` instance. The object's keys are all the
 directories (using absolute paths unless the `cwd` option was used), and the
 values are arrays of the names of the items contained in each directory.
+* `.lastEvent`: An object with two properties: `.type` and `.path`, both
+describing the last emitted event.
 
 ## CLI
 
