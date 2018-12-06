@@ -18,8 +18,8 @@ long-term support for gulp at major version 3</a>.
   * `npm install --save electric-eloquence/chokidar#1.7.0`
 * Semver range (with Git):
   * `npm install --save electric-eloquence/chokidar#semver:~1.7.0`
-* When installed this way, other packages depending on Chokidar will get
-  Chokidar v1 with long-term support with no further modifications.
+* When installed one of these ways, other packages depending on Chokidar will
+  get Chokidar v1 with long-term support.
 
 ## Why Chokidar?
 Node.js `fs.watch`:
