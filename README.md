@@ -24,8 +24,8 @@ Instead, follow these instructions:
   * `npm install --save electric-eloquence/chokidar#1.7.0`
 * Semver range (with Git):
   * `npm install --save electric-eloquence/chokidar#semver:~1.7.0`
-* When installed this way, other packages depending on Chokidar will get
-  Chokidar v1 with long-term support with no further modifications.
+* When installed one of these ways, other packages depending on Chokidar will
+  get Chokidar v1 with long-term support.
 
 ## Why Chokidar?
 Node.js `fs.watch`:
@@ -269,6 +269,8 @@ Takes an array of strings or just one string.
 system being watched by this `FSWatcher` instance. The object's keys are all the
 directories (using absolute paths unless the `cwd` option was used), and the
 values are arrays of the names of the items contained in each directory.
+* `.lastEvent`: An object with two properties: `.type` and `.path`, both
+describing the last emitted event.
 
 ## CLI
 

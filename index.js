@@ -63,6 +63,7 @@ function FSWatcher(_opts) {
     get: function() { return Object.keys(this._ignoredPaths); }
   });
   this.closed = false;
+  this.lastEvent = Object.create(null);
   this._throttled = Object.create(null);
   this._symlinkPaths = Object.create(null);
 
@@ -161,7 +162,8 @@ inherits(FSWatcher, EventEmitter);
 // Returns the error if defined, otherwise the value of the
 // FSWatcher instance's `closed` flag
 FSWatcher.prototype._emit = function(event, path, val1, val2, val3) {
-  this.lastEvent = {event: event, path: path};
+  this.lastEvent.type = event;
+  this.lastEvent.path = path;
 
   if (this.options.cwd) path = sysPath.relative(this.options.cwd, path);
   var args = [event, path];
@@ -195,8 +197,12 @@ FSWatcher.prototype._emit = function(event, path, val1, val2, val3) {
   }
 
   var emitEvent = function() {
-    this.emit.apply(this, args);
-    if (event !== 'error') this.emit.apply(this, ['all'].concat(args));
+    var argsEmit = args.slice(0);
+    if (argsEmit.length === 2 && argsEmit[1] === path) {
+      argsEmit[1] = this.lastEvent;
+    }
+    this.emit.apply(this, argsEmit);
+    if (event !== 'error') this.emit.apply(this, ['all'].concat(argsEmit));
   }.bind(this);
 
   if (awf && (event === 'add' || event === 'change') && this._readyEmitted) {
