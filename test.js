@@ -1740,17 +1740,21 @@ function runTests(baseopts) {
     });
     it('should stop watching unwatched paths', function(done) {
       var spy = sinon.spy();
-      var watchPaths = [getFixturePath('subdir'), getFixturePath('change.txt')];
+      var subdirPath = getFixturePath('subdir');
+      var addPath = sysPath.join(subdirPath, 'add.txt');
+      var changePath = getFixturePath('change.txt')
+      var testArg = {type: 'change', path: changePath};
+      var watchPaths = [subdirPath, changePath];
       watcher = chokidar.watch(watchPaths, options)
         .on('all', spy)
         .on('ready', function() {
-          watcher.unwatch(getFixturePath('subdir'));
+          watcher.unwatch(subdirPath);
           w(function() {
-            fs.writeFile(getFixturePath('subdir/add.txt'), Date.now(), simpleCb);
-            fs.writeFile(getFixturePath('change.txt'), Date.now(), simpleCb);
+            fs.writeFile(addPath, Date.now(), simpleCb);
+            fs.writeFile(changePath, Date.now(), simpleCb);
           })();
           waitFor([spy], w(function() {
-            spy.should.have.been.calledWith('change', getFixturePath('change.txt'));
+            spy.should.have.been.calledWith('change', testArg);
             spy.should.not.have.been.calledWith('add');
             if (!osXFsWatch) spy.should.have.been.calledOnce;
             done();
@@ -1759,20 +1763,24 @@ function runTests(baseopts) {
     });
     it('should ignore unwatched paths that are a subset of watched paths', function(done) {
       var spy = sinon.spy();
+      var subdirPath = getFixturePath('subdir');
+      var addPath = sysPath.join(subdirPath, 'add.txt');
+      var changePath = getFixturePath('change.txt');
+      var unlinkPath = getFixturePath('unlink.txt');
       watcher = chokidar.watch(fixturesPath, options)
         .on('all', spy)
         .on('ready', w(function() {
           // test with both relative and absolute paths
-          var subdirRel = sysPath.relative(process.cwd(), getFixturePath('subdir'));
+          var subdirRel = sysPath.relative(process.cwd(), subdirPath);
           watcher.unwatch([subdirRel, getFixturePath('unl*')]);
           w(function() {
-            fs.unlink(getFixturePath('unlink.txt'), simpleCb);
-            fs.writeFile(getFixturePath('subdir/add.txt'), Date.now(), simpleCb);
-            fs.writeFile(getFixturePath('change.txt'), Date.now(), simpleCb);
+            fs.unlink(unlinkPath, simpleCb);
+            fs.writeFile(addPath, Date.now(), simpleCb);
+            fs.writeFile(changePath, Date.now(), simpleCb);
           })();
           waitFor([spy.withArgs('change')], w(function() {
-            spy.should.have.been.calledWith('change', getFixturePath('change.txt'));
-            spy.should.not.have.been.calledWith('add', getFixturePath('subdir/add.txt'));
+            spy.should.have.been.calledWith('change', {type: 'change', path: changePath});
+            spy.should.not.have.been.calledWith('add', addPath);
             spy.should.not.have.been.calledWith('unlink');
             done();
           }, 300));
@@ -1783,6 +1791,7 @@ function runTests(baseopts) {
       var fixturesDir = sysPath.relative(process.cwd(), fixturesPath);
       var subdir = sysPath.join(fixturesDir, 'subdir');
       var changeFile = sysPath.join(fixturesDir, 'change.txt');
+      var testArg = {type: 'change', path: changeFile};
       var watchPaths = [subdir, changeFile];
       watcher = chokidar.watch(watchPaths, options)
         .on('all', spy)
@@ -1791,7 +1800,7 @@ function runTests(baseopts) {
           fs.writeFile(getFixturePath('subdir/add.txt'), Date.now(), simpleCb);
           fs.writeFile(getFixturePath('change.txt'), Date.now(), simpleCb);
           waitFor([spy], w(function() {
-            spy.should.have.been.calledWith('change', changeFile);
+            spy.should.have.been.calledWith('change', testArg);
             spy.should.not.have.been.calledWith('add');
             if (!osXFsWatch) spy.should.have.been.calledOnce;
             done();
@@ -1800,16 +1809,18 @@ function runTests(baseopts) {
     });
     it('should watch paths that were unwatched and added again', function(done) {
       var spy = sinon.spy();
-      var watchPaths = [getFixturePath('change.txt')];
+      var changePath = getFixturePath('change.txt');
+      var testArg = {type: 'change', path: changePath};
+      var watchPaths = [changePath];
       watcher = chokidar.watch(watchPaths, options)
         .on('ready', w(function() {
-          watcher.unwatch(getFixturePath('change.txt'));
+          watcher.unwatch(changePath);
           w(function() {
-            watcher.on('all', spy).add(getFixturePath('change.txt'));
+            watcher.on('all', spy).add(changePath);
             w(function() {
-              fs.writeFile(getFixturePath('change.txt'), Date.now(), simpleCb);
+              fs.writeFile(changePath, Date.now(), simpleCb);
               waitFor([spy], function() {
-                spy.should.have.been.calledWith('change', getFixturePath('change.txt'));
+                spy.should.have.been.calledWith('change', testArg);
                 if (!osXFsWatch) spy.should.have.been.calledOnce;
                 done();
               });
@@ -1820,17 +1831,21 @@ function runTests(baseopts) {
     it('should unwatch paths that are relative to options.cwd', function(done) {
       options.cwd = fixturesPath;
       var spy = sinon.spy();
+      var addPath = getFixturePath('subdir/add.txt');
+      var changePath = getFixturePath('change.txt');
+      var unlinkPath = getFixturePath('unlink.txt');
+      var testArg = {type: 'change', path: changePath};
       watcher = chokidar.watch('.', options)
         .on('all', spy)
         .on('ready', function() {
-          watcher.unwatch(['subdir', getFixturePath('unlink.txt')]);
+          watcher.unwatch(['subdir', unlinkPath]);
           w(function() {
-            fs.unlink(getFixturePath('unlink.txt'), simpleCb);
-            fs.writeFile(getFixturePath('subdir/add.txt'), Date.now(), simpleCb);
-            fs.writeFile(getFixturePath('change.txt'), Date.now(), simpleCb);
+            fs.unlink(unlinkPath, simpleCb);
+            fs.writeFile(addPath, Date.now(), simpleCb);
+            fs.writeFile(changePath, Date.now(), simpleCb);
           })();
           waitFor([spy], w(function() {
-            spy.should.have.been.calledWith('change', 'change.txt');
+            spy.should.have.been.calledWith('change', testArg);
             spy.should.not.have.been.calledWith('add');
             spy.should.not.have.been.calledWith('unlink');
             if (!osXFsWatch) spy.should.have.been.calledOnce;
