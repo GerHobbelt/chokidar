@@ -199,7 +199,8 @@ FSWatcher.prototype._emit = function(event, path, val1, val2, val3) {
   var emitEvent = function() {
     var argsEmit = args.slice(0);
     if (argsEmit.length === 2 && argsEmit[1] === path) {
-      argsEmit[1] = this.lastEvent;
+      // Dereference from this.lastEvent
+      argsEmit[1] = JSON.parse(JSON.stringify(this.lastEvent));
     }
     this.emit.apply(this, argsEmit);
     if (event !== 'error') this.emit.apply(this, ['all'].concat(argsEmit));
