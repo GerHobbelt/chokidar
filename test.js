@@ -558,8 +558,8 @@ function runTests(baseopts) {
       var bPath = sysPath.join(parentPath, 'b.txt');
       var addPath = sysPath.join(parentPath, 'add.txt');
       var abPath = sysPath.join(subPath, 'ab.txt');
-      var aPathTestArg = {type: 'unlink', path: aPath}
-      var abPathTestArg = {type: 'change', path: abPath}
+      var unlinkTestArg = {type: 'unlink', path: aPath}
+      var changeTestArg = {type: 'change', path: abPath}
       fs.mkdirSync(parentPath, 0x1ed);
       fs.mkdirSync(subPath, 0x1ed);
       fs.writeFileSync(aPath, 'b');
@@ -577,8 +577,8 @@ function runTests(baseopts) {
             })();
             waitFor([[spy.withArgs('add'), 3], spy.withArgs('unlink'), spy.withArgs('change')], function() {
               spy.withArgs('add').should.have.been.calledThrice;
-              spy.should.have.been.calledWith('unlink', aPathTestArg);
-              spy.should.have.been.calledWith('change', abPathTestArg);
+              spy.should.have.been.calledWith('unlink', unlinkTestArg);
+              spy.should.have.been.calledWith('change', changeTestArg);
               spy.withArgs('unlink').should.have.been.calledOnce;
               spy.withArgs('change').should.have.been.calledOnce;
               done();
@@ -816,6 +816,7 @@ function runTests(baseopts) {
       var spy = sinon.spy();
       var changePath = getFixturePath('change.txt');
       var linkPath = getFixturePath('link.txt');
+      var testArg = {type: 'change', path: linkPath};
       fs.symlinkSync(changePath, linkPath);
       watcher = chokidar.watch(linkPath, options)
         .on('all', spy)
@@ -823,7 +824,7 @@ function runTests(baseopts) {
           fs.writeFile(changePath, Date.now(), simpleCb);
           waitFor([spy.withArgs('change')], function() {
             spy.should.have.been.calledWith('add', linkPath);
-            spy.should.have.been.calledWith('change', linkPath);
+            spy.should.have.been.calledWith('change', testArg);
             done();
           });
         });
@@ -831,7 +832,9 @@ function runTests(baseopts) {
     it('should follow symlinked files within a normal dir', function(done) {
       var spy = sinon.spy();
       var changePath = getFixturePath('change.txt');
-      var linkPath = getFixturePath('subdir/link.txt');
+      var testDir = getFixturePath('subdir');
+      var linkPath = sysPath.join(testDir, 'link.txt');
+      var testArg = {type: 'change', path: linkPath};
       fs.symlinkSync(changePath, linkPath);
       watcher = chokidar.watch(getFixturePath('subdir'), options)
         .on('all', spy)
@@ -839,7 +842,7 @@ function runTests(baseopts) {
           fs.writeFile(changePath, Date.now(), simpleCb);
           waitFor([spy.withArgs('change', linkPath)], function() {
             spy.should.have.been.calledWith('add', linkPath);
-            spy.should.have.been.calledWith('change', linkPath);
+            spy.should.have.been.calledWith('change', testArg);
             done();
           });
         });
@@ -848,6 +851,7 @@ function runTests(baseopts) {
       var spy = sinon.spy();
       var testDir = sysPath.join(linkedDir, 'subdir');
       var testFile = sysPath.join(testDir, 'add.txt');
+      var testArg = {type: 'change', path: testFile};
       watcher = chokidar.watch(testDir, options)
         .on('all', spy)
         .on('ready', function() {
@@ -855,7 +859,7 @@ function runTests(baseopts) {
           spy.should.have.been.calledWith('add', testFile);
           fs.writeFile(getFixturePath('subdir/add.txt'), Date.now(), simpleCb);
           waitFor([spy.withArgs('change')], function() {
-            spy.should.have.been.calledWith('change', testFile);
+            spy.should.have.been.calledWith('change', testArg);
             done();
           });
         });
@@ -870,9 +874,10 @@ function runTests(baseopts) {
         .on('change', spy)
         .on('ready', function() {
           var linkedFilePath = sysPath.join(linkedDir, 'change.txt');
+          var testArg = {type: 'change', path: linkedFilePath};
           fs.writeFile(getFixturePath('change.txt'), Date.now(), simpleCb);
           waitFor([spy.withArgs(linkedFilePath)], function() {
-            spy.should.have.been.calledWith(linkedFilePath);
+            spy.should.have.been.calledWith(testArg);
             done();
           });
         });
@@ -910,6 +915,7 @@ function runTests(baseopts) {
       options.followSymlinks = false;
       var spy = sinon.spy();
       var linkPath = getFixturePath('link');
+      var testArg = {type: 'change', path: linkPath};
       fs.symlinkSync(getFixturePath('subdir'), linkPath);
       stdWatcher()
         .on('all', spy)
@@ -923,7 +929,7 @@ function runTests(baseopts) {
             spy.should.not.have.been.calledWith('addDir', linkPath);
             spy.should.not.have.been.calledWith('add', getFixturePath('link/add.txt'));
             spy.should.have.been.calledWith('add', linkPath);
-            spy.should.have.been.calledWith('change', linkPath);
+            spy.should.have.been.calledWith('change', testArg);
             done();
           });
         });
@@ -939,12 +945,13 @@ function runTests(baseopts) {
       watcher2 = chokidar.watch(getFixturePath('subdir'), options)
         .on('ready', w(function() {
           var watchedPath = getFixturePath('subdir/subsub/text.txt');
+          var testArg = {type: 'change', path: watchedPath};
           watcher = chokidar.watch(watchedPath, options)
             .on('all', spy)
             .on('ready', w(function() {
               fs.writeFile(linkedFilePath, Date.now(), simpleCb);
               waitFor([spy.withArgs('change')], function() {
-                spy.should.have.been.calledWith('change', watchedPath);
+                spy.should.have.been.calledWith('change', testArg);
                 done();
               });
             }));
@@ -955,17 +962,21 @@ function runTests(baseopts) {
       var addSpy = sinon.spy(function addSpy(){});
       // test with relative path to ensure proper resolution
       var watchDir = sysPath.relative(process.cwd(), linkedDir);
+      var changePath = sysPath.join(watchDir, 'change.txt');
+      var subdirPath = sysPath.join(watchDir, 'subdir');
+      var addPath = sysPath.join(watchDir, 'add.txt');
+      var testArg = {type: 'add', path: addPath};
       watcher = chokidar.watch(sysPath.join(watchDir, '**/*'), options)
         .on('addDir', dirSpy)
         .on('add', addSpy)
         .on('ready', function() {
           // only the children are matched by the glob pattern, not the link itself
-          addSpy.should.have.been.calledWith(sysPath.join(watchDir, 'change.txt'));
+          addSpy.should.have.been.calledWith(changePath);
           addSpy.should.have.been.calledThrice; // also unlink.txt & subdir/add.txt
-          dirSpy.should.have.been.calledWith(sysPath.join(watchDir, 'subdir'));
-          fs.writeFile(sysPath.join(watchDir, 'add.txt'), simpleCb);
+          dirSpy.should.have.been.calledWith(subdirPath);
+          fs.writeFile(addPath, simpleCb);
           waitFor([[addSpy, 4]], function() {
-            addSpy.should.have.been.calledWith(sysPath.join(watchDir, 'add.txt'));
+            addSpy.should.have.been.calledWith(testArg);
             done();
           });
         });
