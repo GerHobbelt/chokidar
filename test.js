@@ -218,11 +218,12 @@ function runTests(baseopts) {
     it('should emit `unlink` event when file was removed', function(done) {
       var spy = sinon.spy();
       var testPath = getFixturePath('unlink.txt');
+      var testArg = {type: 'unlink', path: testPath};
       watcher.on('unlink', spy).on('ready', function() {
         spy.should.not.have.been.called;
         fs.unlink(testPath, simpleCb);
         waitFor([spy], function() {
-          spy.should.have.been.calledWith(testPath);
+          spy.should.have.been.calledWith(testArg);
           expect(spy.args[0][1]).to.not.be.ok; // no stats
           rawSpy.should.have.been.called;
           spy.should.have.been.calledOnce;
@@ -233,11 +234,12 @@ function runTests(baseopts) {
     it('should emit `unlinkDir` event when a directory was removed', function(done) {
       var spy = sinon.spy();
       var testDir = getFixturePath('subdir');
+      var testArg = {type: 'unlinkDir', path: testDir};
       fs.mkdirSync(testDir, 0x1ed);
       watcher.on('unlinkDir', spy).on('ready', function() {
         w(fs.rmdir.bind(fs, testDir, simpleCb))();
         waitFor([spy], function() {
-          spy.should.have.been.calledWith(testDir);
+          spy.should.have.been.calledWith(testArg);
           expect(spy.args[0][1]).to.not.be.ok; // no stats
           rawSpy.should.have.been.called;
           spy.should.have.been.calledOnce;
@@ -250,6 +252,7 @@ function runTests(baseopts) {
       var addSpy = sinon.spy(function add(){});
       var testPath = getFixturePath('change.txt');
       var newPath = getFixturePath('moved.txt');
+      var testArg = {type: 'unlink', path: testPath};
       watcher
         .on('unlink', unlinkSpy)
         .on('add', addSpy)
@@ -258,7 +261,7 @@ function runTests(baseopts) {
           addSpy.should.not.have.been.called;
           w(fs.rename.bind(fs, testPath, newPath, simpleCb))();
           waitFor([unlinkSpy, addSpy], function() {
-            unlinkSpy.should.have.been.calledWith(testPath);
+            unlinkSpy.should.have.been.calledWith(testArg);
             expect(unlinkSpy.args[0][1]).to.not.be.ok; // no stats
             addSpy.should.have.been.calledOnce;
             addSpy.should.have.been.calledWith(newPath);
@@ -274,6 +277,7 @@ function runTests(baseopts) {
       var addSpy = sinon.spy(function add(){});
       var changeSpy = sinon.spy(function change(){});
       var testPath = getFixturePath('add.txt');
+      var testArg = {type: 'unlink', path: testPath};
       fs.writeFileSync(testPath, 'hello');
       watcher
         .on('unlink', unlinkSpy)
@@ -285,7 +289,7 @@ function runTests(baseopts) {
           changeSpy.should.not.have.been.called;
           fs.unlink(testPath, simpleCb);
           waitFor([unlinkSpy.withArgs(testPath)], function() {
-            unlinkSpy.should.have.been.calledWith(testPath);
+            unlinkSpy.should.have.been.calledWith(testArg);
             w(fs.writeFile.bind(fs, testPath, Date.now(), simpleCb))();
             waitFor([addSpy.withArgs(testPath)], function() {
               addSpy.should.have.been.calledWith(testPath);
@@ -300,6 +304,9 @@ function runTests(baseopts) {
       var testPath = getFixturePath('change.txt');
       var newPath1 = getFixturePath('moved.txt');
       var newPath2 = getFixturePath('moved-again.txt');
+      var testArg = {type: 'unlink', path: testPath};
+      var testArg1 = {type: 'unlink', path: newPath1};
+      var testArg2 = {type: 'unlink', path: newPath2};
       watcher
         .on('unlink', unlinkSpy)
         .on('ready', function() {
@@ -307,9 +314,9 @@ function runTests(baseopts) {
             fs.rename(newPath1, newPath2, simpleCb);
           }, 300));
           waitFor([unlinkSpy.withArgs(newPath1)], function() {
-            unlinkSpy.withArgs(testPath).should.have.been.calledOnce;
-            unlinkSpy.withArgs(newPath1).should.have.been.calledOnce;
-            unlinkSpy.withArgs(newPath2).should.not.have.been.called;
+            unlinkSpy.withArgs(testArg).should.have.been.calledOnce;
+            unlinkSpy.withArgs(testArg1).should.have.been.calledOnce;
+            unlinkSpy.withArgs(testArg2).should.not.have.been.called;
             done();
           });
         });
@@ -344,6 +351,7 @@ function runTests(baseopts) {
       var addSpy = sinon.spy(function addSpy(){});
       var parentPath = getFixturePath('subdir2');
       var subPath = getFixturePath('subdir2/subsub');
+      var testArg = {type: 'unlinkDir', path: parentPath};
       watcher
         .on('unlinkDir', unlinkSpy)
         .on('addDir', addSpy)
@@ -352,7 +360,7 @@ function runTests(baseopts) {
             fs.rmdir(parentPath, simpleCb);
           }, win32Polling ? 900 : 300));
           waitFor([unlinkSpy.withArgs(parentPath)], function() {
-            unlinkSpy.should.have.been.calledWith(parentPath);
+            unlinkSpy.should.have.been.calledWith(testArg);
             fs.mkdir(parentPath, 0x1ed, w(function() {
               fs.mkdir(subPath, 0x1ed, simpleCb);
             }, win32Polling ? 2200 : 1200));
@@ -369,12 +377,13 @@ function runTests(baseopts) {
     it('should detect changes', function(done) {
       var spy = sinon.spy();
       var testPath = getFixturePath('change.txt');
+      var testArg = {type: 'change', path: testPath};
       watcher = chokidar.watch(testPath, options)
         .on('change', spy)
         .on('ready', function() {
           fs.writeFile(testPath, Date.now(), simpleCb);
           waitFor([spy], function() {
-            spy.should.have.always.been.calledWith(testPath);
+            spy.should.have.always.been.calledWith(testArg);
             done();
           });
         });
@@ -382,12 +391,13 @@ function runTests(baseopts) {
     it('should detect unlinks', function(done) {
       var spy = sinon.spy();
       var testPath = getFixturePath('unlink.txt');
+      var testArg = {type: 'unlink', path: testPath};
       watcher = chokidar.watch(testPath, options)
         .on('unlink', spy)
         .on('ready', function() {
           w(fs.unlink.bind(fs, testPath, simpleCb))();
           waitFor([spy], function() {
-            spy.should.have.been.calledWith(testPath);
+            spy.should.have.been.calledWith(testArg);
             done();
           });
         });
@@ -397,16 +407,18 @@ function runTests(baseopts) {
       var unlinkSpy = sinon.spy(function unlinkSpy(){});
       var addSpy = sinon.spy(function addSpy(){});
       var testPath = getFixturePath('unlink.txt');
+      var unlinkTestArg = {type: 'unlink', path: testPath};
+      var addTestArg = {type: 'add', path: testPath};
       watcher = chokidar.watch(testPath, options)
         .on('unlink', unlinkSpy)
         .on('add', addSpy)
         .on('ready', function() {
           w(fs.unlink.bind(fs, testPath, simpleCb))();
           waitFor([unlinkSpy], w(function() {
-            unlinkSpy.should.have.been.calledWith(testPath);
+            unlinkSpy.should.have.been.calledWith(unlinkTestArg);
             w(fs.writeFile.bind(fs, testPath, 're-added', simpleCb))();
             waitFor([addSpy], function() {
-              addSpy.should.have.been.calledWith(testPath);
+              addSpy.should.have.been.calledWith(addTestArg);
               done();
             });
           }));
@@ -416,13 +428,14 @@ function runTests(baseopts) {
       var spy = sinon.spy();
       var testPath = getFixturePath('add.txt');
       var siblingPath = getFixturePath('change.txt');
+      var testArg = {type: 'add', path: testPath};
       watcher = chokidar.watch(testPath, options)
         .on('all', spy)
         .on('ready', w(function() {
           fs.writeFile(siblingPath, Date.now(), simpleCb);
           fs.writeFile(testPath, Date.now(), simpleCb);
           waitFor([spy], function() {
-            spy.should.have.always.been.calledWith('add', testPath);
+            spy.should.have.always.been.calledWith('add', testArg);
             done();
           });
         }));
