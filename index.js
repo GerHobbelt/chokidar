@@ -182,8 +182,13 @@ FSWatcher.prototype._emit = function(event, path, val1, val2, val3) {
       this._pendingUnlinks[path] = args;
       setTimeout(function() {
         Object.keys(this._pendingUnlinks).forEach(function(path) {
-          this.emit.apply(this, this._pendingUnlinks[path]);
-          this.emit.apply(this, ['all'].concat(this._pendingUnlinks[path]));
+          var argsEmit = this._pendingUnlinks[path].slice(0);
+          if (argsEmit[0] === event && argsEmit[1] === path) {
+            // Dereference from this.lastEvent
+            argsEmit[1] = {type: argsEmit[0], path: argsEmit[1]};
+          }
+          this.emit.apply(this, argsEmit);
+          this.emit.apply(this, ['all'].concat(argsEmit));
           delete this._pendingUnlinks[path];
         }.bind(this));
       }.bind(this), typeof this.options.atomic === "number"
@@ -198,8 +203,9 @@ FSWatcher.prototype._emit = function(event, path, val1, val2, val3) {
 
   var emitEvent = function() {
     var argsEmit = args.slice(0);
-    if (argsEmit.length === 2 && argsEmit[1] === path) {
-      argsEmit[1] = this.lastEvent;
+    if (argsEmit[1] === path) {
+      // Dereference from this.lastEvent
+      argsEmit[1] = JSON.parse(JSON.stringify(this.lastEvent));
     }
     this.emit.apply(this, argsEmit);
     if (event !== 'error') this.emit.apply(this, ['all'].concat(argsEmit));
