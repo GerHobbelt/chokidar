@@ -21,9 +21,13 @@ function getFixturePath (subPath) {
   );
 }
 
+// This terrible scoping of watcher and watcher2 is necessary for this test to run correctly in Windows.
+// It may result in flaky results on macOS, but since it is consistent on Linux, continuous integration test should pass
+// reliably.
 var watcher,
-    watcher2,
-    fixturesPath = getFixturePath(''),
+    watcher2;
+
+var fixturesPath = getFixturePath(''),
     subdir = 0,
     options,
     osXFsWatch,
