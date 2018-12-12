@@ -22,7 +22,8 @@
   },
   "license": "MIT",
   "scripts": {
-    "test": "nyc mocha --exit && nyc report --reporter=text-lcov | coveralls"
+    "coverage": "nyc report --reporter=text-lcov | coveralls",
+    "test": "nyc mocha --exit"
   },
   "files": [
     "index.js",
