@@ -1,4 +1,4 @@
-# Chokidar
+# Chokidar [![Known Vulnerabilities][snyk-image]][snyk-url] [![Build Status][travis-image]][travis-url] [![Coverage Status][coveralls-image]][coveralls-url] ![license][license-image]
 
 > A neat wrapper around node.js fs.watch / fs.watchFile / fsevents.
 
@@ -292,26 +292,13 @@ execute a command on each change, or get a stdio stream of change events.
 * `gyp ERR! stack Error: not found: make`
   * On Mac, install the XCode command-line tools
 
-## License
+[snyk-image]: https://snyk.io/test/github/electric-eloquence/chokidar/badge.svg
+[snyk-url]: https://snyk.io/test/github/electric-eloquence/chokidar
 
-The MIT License (MIT)
+[travis-image]: https://img.shields.io/travis/electric-eloquence/chokidar.svg
+[travis-url]: https://travis-ci.org/electric-eloquence/chokidar
 
-Copyright (c) 2016 Paul Miller (http://paulmillr.com) & Elan Shanker
+[coveralls-image]: https://img.shields.io/coveralls/electric-eloquence/chokidar/v1-lts.svg
+[coveralls-url]: https://coveralls.io/r/electric-eloquence/chokidar
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the “Software”), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
+[license-image]: https://img.shields.io/github/license/electric-eloquence/chokidar.svg
