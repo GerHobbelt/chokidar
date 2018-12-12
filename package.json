@@ -22,7 +22,7 @@
   },
   "license": "MIT",
   "scripts": {
-    "test": "nyc mocha --exit"
+    "test": "nyc mocha --exit && nyc report --reporter=text-lcov | coveralls"
   },
   "files": [
     "index.js",
@@ -30,6 +30,7 @@
   ],
   "devDependencies": {
     "chai": "4.x",
+    "coveralls": "^3.0.2",
     "graceful-fs": "^4.1.15",
     "mocha": "5.x",
     "nyc": "^11.9.0",
