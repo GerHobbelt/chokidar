@@ -286,8 +286,8 @@ execute a command on each change, or get a stdio stream of change events.
 * `gyp ERR! stack Error: not found: make`
   * On Mac, install the XCode command-line tools
 
-[snyk-image]: https://snyk.io/test/github/electric-eloquence/chokidar/badge.svg
-[snyk-url]: https://snyk.io/test/github/electric-eloquence/chokidar
+[snyk-image]: https://snyk.io/test/github/electric-eloquence/chokidar/v1-lts/badge.svg
+[snyk-url]: https://snyk.io/test/github/electric-eloquence/chokidar/v1-lts
 
 [travis-image]: https://img.shields.io/travis/electric-eloquence/chokidar.svg
 [travis-url]: https://travis-ci.org/electric-eloquence/chokidar
