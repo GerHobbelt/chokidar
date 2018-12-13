@@ -1,4 +1,4 @@
-# Chokidar [![Known Vulnerabilities][snyk-image]][snyk-url] [![Build Status][travis-image]][travis-url] [![Coverage Status][coveralls-image]][coveralls-url] ![license][license-image]
+# Chokidar [![Known Vulnerabilities][snyk-image]][snyk-url] [![Mac/Linux Build Status][travis-image]][travis-url] [![Windows Build Status][appveyor-image]][appveyor-url] [![Coverage Status][coveralls-image]][coveralls-url] ![license][license-image]
 
 > A neat wrapper around node.js fs.watch / fs.watchFile / fsevents.
 
@@ -291,6 +291,9 @@ execute a command on each change, or get a stdio stream of change events.
 
 [travis-image]: https://img.shields.io/travis/electric-eloquence/chokidar.svg
 [travis-url]: https://travis-ci.org/electric-eloquence/chokidar
+
+[appveyor-image]: https://img.shields.io/appveyor/ci/electric-eloquence/chokidar.svg?label=appveyor
+[appveyor-url]: https://ci.appveyor.com/project/electric-eloquence/chokidar
 
 [coveralls-image]: https://img.shields.io/coveralls/electric-eloquence/chokidar/v1-lts.svg
 [coveralls-url]: https://coveralls.io/r/electric-eloquence/chokidar
