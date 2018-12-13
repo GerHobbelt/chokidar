@@ -22,8 +22,8 @@ function getFixturePath (subPath) {
 }
 
 // This terrible scoping of watcher and watcher2 is necessary for this test to run correctly in Windows.
-// It may result in flaky results on macOS, but since it is consistent on Linux, continuous integration test should pass
-// reliably.
+// It may result in flaky results on macOS. Continuous integration tests for macOS must be monitored and restarted if
+// necessary.
 var watcher,
     watcher2;
 
