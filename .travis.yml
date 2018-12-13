@@ -3,7 +3,9 @@ os:
   - linux
   - osx
 node_js:
-  - "stable"
-  - "4"
+  - "6"
+  - "8"
+  - "10"
+  - "11"
 after_script:
   - npm run coverage
