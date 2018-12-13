@@ -1,4 +1,4 @@
-# Chokidar [![Known Vulnerabilities][snyk-image]][snyk-url] [![Build Status][travis-image]][travis-url] [![Coverage Status][coveralls-image]][coveralls-url] ![license][license-image]
+# Chokidar [![Known Vulnerabilities][snyk-image]][snyk-url] [![Mac/Linux Build Status][travis-image]][travis-url] [![Windows Build Status][appveyor-image]][appveyor-url] [![Coverage Status][coveralls-image]][coveralls-url] [![License][license-image]][license-url]
 
 > A neat wrapper around node.js fs.watch / fs.watchFile / fsevents.
 
@@ -292,13 +292,17 @@ execute a command on each change, or get a stdio stream of change events.
 * `gyp ERR! stack Error: not found: make`
   * On Mac, install the XCode command-line tools
 
-[snyk-image]: https://snyk.io/test/github/electric-eloquence/chokidar/badge.svg
-[snyk-url]: https://snyk.io/test/github/electric-eloquence/chokidar
+[snyk-image]: https://snyk.io/test/github/electric-eloquence/chokidar/v1-lts/badge.svg
+[snyk-url]: https://snyk.io/test/github/electric-eloquence/chokidar/v1-lts
 
 [travis-image]: https://img.shields.io/travis/electric-eloquence/chokidar.svg
 [travis-url]: https://travis-ci.org/electric-eloquence/chokidar
+
+[appveyor-image]: https://img.shields.io/appveyor/ci/e2tha-e/chokidar.svg?label=appveyor
+[appveyor-url]: https://ci.appveyor.com/project/e2tha-e/chokidar
 
 [coveralls-image]: https://img.shields.io/coveralls/electric-eloquence/chokidar/v1-lts.svg
 [coveralls-url]: https://coveralls.io/r/electric-eloquence/chokidar
 
 [license-image]: https://img.shields.io/github/license/electric-eloquence/chokidar.svg
+[license-url]: https://raw.githubusercontent.com/electric-eloquence/chokidar/v1-lts/LICENSE
