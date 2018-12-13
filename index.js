@@ -8,9 +8,45 @@ var globParent = require('glob-parent');
 var isGlob = require('is-glob');
 var isAbsolute = require('path-is-absolute');
 var inherits = require('inherits');
+var slash = require('slash');
 
 var NodeFsHandler = require('./lib/nodefs-handler');
 var FsEventsHandler = require('./lib/fsevents-handler');
+
+var slashStringOrArray = function(stringOrArray) {
+  var slashed;
+  if (typeof stringOrArray === 'string') {
+    slashed = slash(stringOrArray);
+  } else if (Array.isArray(stringOrArray)) {
+    slashed = [];
+    for (var i = 0; i < stringOrArray.length; i++) {
+      if (typeof stringOrArray[i] === 'string') {
+        slashed.push(slash(stringOrArray[i]));
+      } else {
+        slashed.push(stringOrArray[i]);
+      }
+    }
+  } else {
+    slashed = stringOrArray;
+  }
+  return slashed;
+}
+
+var anymatchSlashed = function() {
+  var argsNew = [];
+  if (arguments[0]) {
+    argsNew[0] = slashStringOrArray(arguments[0]);
+  }
+  if (arguments[1]) {
+    argsNew[1] = slashStringOrArray(arguments[1]);
+  }
+  if (arguments.length > 2) {
+    for (var i = 2; i < arguments.length; i++) {
+      argsNew.push(arguments[i]);
+    }
+  }
+  return anymatch.apply(null, argsNew);
+}
 
 var arrify = function(value) {
   if (value == null) return [];
@@ -378,7 +414,7 @@ FSWatcher.prototype._isIgnored = function(path, stats) {
       }).map(function(path) {
         return path + '/**';
       });
-    this._userIgnored = anymatch(
+    this._userIgnored = anymatchSlashed(
       this._globIgnored.concat(ignored).concat(paths)
     );
   }
@@ -399,7 +435,7 @@ FSWatcher.prototype._getWatchHelpers = function(path, depth) {
   var watchPath = depth || this.options.disableGlobbing || !isGlob(path) ? path : globParent(path);
   var fullWatchPath = sysPath.resolve(watchPath);
   var hasGlob = watchPath !== path;
-  var globFilter = hasGlob ? anymatch(path) : false;
+  var globFilter = hasGlob ? anymatchSlashed(path) : false;
   var follow = this.options.followSymlinks;
   var globSymlink = hasGlob && follow ? null : false;
 
@@ -451,7 +487,7 @@ FSWatcher.prototype._getWatchHelpers = function(path, depth) {
       var globstar = false;
       unmatchedGlob = !dirParts.every(function(part, i) {
         if (part === '**') globstar = true;
-        return globstar || !entryParts[i] || anymatch(part, entryParts[i]);
+        return globstar || !entryParts[i] || anymatchSlashed(part, entryParts[i]);
       });
     }
     return !unmatchedGlob && this._isntIgnored(entryPath(entry), entry.stat);
