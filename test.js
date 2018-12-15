@@ -639,29 +639,31 @@ function runTests(baseopts) {
       fs.writeFileSync(aPath, 'b');
       fs.writeFileSync(bPath, 'b');
       fs.writeFileSync(abPath, 'b');
-      var watcher = chokidar.watch(watchPath, options)
-        .on('all', spy)
-        .on('ready', function() {
-          w(function() {
-            fs.writeFile(addPath, Date.now(), simpleCb);
-            fs.writeFile(abPath, Date.now(), simpleCb);
-            fs.unlink(aPath, simpleCb);
-            fs.unlink(bPath, simpleCb);
-          })();
-          waitFor([
-            [spy.withArgs('add'), 3],
-            spy.withArgs('unlink'),
-            spy.withArgs('change')
-          ], function() {
-            spy.withArgs('add').should.have.been.calledThrice;
-            spy.should.have.been.calledWith('unlink', unlinkArg);
-            spy.should.have.been.calledWith('change', changeArg);
-            spy.withArgs('unlink').should.have.been.calledOnce;
-            spy.withArgs('change').should.have.been.calledOnce;
-            wClose(watcher);
-            done();
+      w(function() {
+        var watcher = chokidar.watch(watchPath, options)
+          .on('all', spy)
+          .on('ready', function() {
+            w(function() {
+              fs.writeFile(addPath, Date.now(), simpleCb);
+              fs.writeFile(abPath, Date.now(), simpleCb);
+              fs.unlink(aPath, simpleCb);
+              fs.unlink(bPath, simpleCb);
+            })();
+            waitFor([
+              [spy.withArgs('add'), 3],
+              spy.withArgs('unlink'),
+              spy.withArgs('change')
+            ], function() {
+              spy.withArgs('add').should.have.been.calledThrice;
+              spy.should.have.been.calledWith('unlink', unlinkArg);
+              spy.should.have.been.calledWith('change', changeArg);
+              spy.withArgs('unlink').should.have.been.calledOnce;
+              spy.withArgs('change').should.have.been.calledOnce;
+              wClose(watcher);
+              done();
+            });
           });
-        });
+      })();
     });
     it('should resolve relative paths with glob patterns', function(done) {
       var spy = sinon.spy();
@@ -2107,9 +2109,9 @@ var watcher = chokidar.watch("' + scriptFile.replace(/\\/g, '\\\\') + '");\n\
 watcher.close();\n\
 process.stdout.write("closed");\n\
 ';
-      fs.writeFile(scriptFile, scriptContent, function (err) {
+      fs.writeFile(scriptFile, scriptContent, function(err) {
         if (err) throw err;
-        cp.exec('node ' + scriptFile, function (err, stdout) {
+        cp.exec('node ' + scriptFile, function(err, stdout) {
           if (err) throw err;
           expect(stdout.toString()).to.equal('closed');
           done();
