@@ -23,6 +23,8 @@
   "license": "MIT",
   "scripts": {
     "coverage": "nyc report --reporter=text-lcov | coveralls",
+    "lint": "eslint index.js lib test.js",
+    "pretest": "npm run lint",
     "test": "nyc mocha --exit"
   },
   "files": [

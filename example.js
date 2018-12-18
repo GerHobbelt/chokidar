@@ -8,5 +8,5 @@ require('./').watch('.', {
   console.log(event, path);
 }).on('ready', function() {
   console.log('Ready');
-})
-//.on('raw', console.log.bind(console, 'RawEvent:'))
+});
+// .on('raw', console.log.bind(console, 'RawEvent:'));

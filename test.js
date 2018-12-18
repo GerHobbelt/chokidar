@@ -12,7 +12,7 @@ var cp = require('child_process');
 chai.use(require('sinon-chai'));
 var os = process.platform;
 
-function getFixturePath (subPath) {
+function getFixturePath(subPath) {
   return sysPath.join(
     __dirname,
     'test-fixtures',
