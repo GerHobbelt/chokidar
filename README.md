@@ -77,8 +77,8 @@ Then `require` and use it in your code:
 var chokidar = require('chokidar');
 
 // One-liner for current directory, ignores .dotfiles
-chokidar.watch('.', {ignored: /(^|[\/\\])\../}).on('all', (event, path) => {
-  console.log(event, path);
+chokidar.watch('.', {ignored: /(^|[\/\\])\../}).on('all', (type, event) => {
+  console.log(type, event);
 });
 ```
 
@@ -95,14 +95,14 @@ var watcher = chokidar.watch('file, dir, glob, or array', {
 var log = console.log.bind(console);
 // Add event listeners.
 watcher
-  .on('add', path => log(`File ${path} has been added`))
-  .on('change', path => log(`File ${path} has been changed`))
-  .on('unlink', path => log(`File ${path} has been removed`));
+  .on('add', event => log(`File ${event.path} had a ${event.type} event`))
+  .on('change', event => log(`File ${event.path} had a ${event.type} event`))
+  .on('unlink', event => log(`File ${event.path} had a ${event.type} event`));
 
 // More possible events.
 watcher
-  .on('addDir', path => log(`Directory ${path} has been added`))
-  .on('unlinkDir', path => log(`Directory ${path} has been removed`))
+  .on('addDir', event => log(`Directory ${event.path} had a ${event.type} event`))
+  .on('unlinkDir', event => log(`Directory ${event.path} had a ${event.type} event`))
   .on('error', error => log(`Watcher error: ${error}`))
   .on('ready', () => log('Initial scan complete. Ready for changes'))
   .on('raw', (event, path, details) => {
@@ -111,8 +111,10 @@ watcher
 
 // 'add', 'addDir' and 'change' events also receive stat() results as second
 // argument when available: http://nodejs.org/api/fs.html#fs_class_fs_stats
-watcher.on('change', (path, stats) => {
-  if (stats) console.log(`File ${path} changed size to ${stats.size}`);
+watcher.on('change', (event, stats) => {
+  if (stats) {
+    console.log(`File ${event.path} had a ${event.type} event: size to ${stats.size}`);
+  }
 });
 
 // Watch new files.
