@@ -9,15 +9,15 @@ long-term support for gulp at major version 3</a>.
 
 ## Install
 * Latest version (without Git):
-  * `npm install --save https://github.com/electric-eloquence/chokidar/tarball/v1-lts`
-  * Or add `"chokidar": "https://github.com/electric-eloquence/chokidar/tarball/v1-lts"`
+  * `npm install --save https://github.com/electric-eloquence/chokidar/tarball/v1-lts@1.7.1`
+  * Or add `"chokidar": "https://github.com/electric-eloquence/chokidar/tarball/v1-lts@1.7.1"`
     as a dependency in package.json.
 * Latest version (with Git):
   * `npm install --save electric-eloquence/chokidar`
 * Specific version (with Git):
-  * `npm install --save electric-eloquence/chokidar#1.7.0`
+  * `npm install --save electric-eloquence/chokidar#1.7.1`
 * Semver range (with Git):
-  * `npm install --save electric-eloquence/chokidar#semver:~1.7.0`
+  * `npm install --save electric-eloquence/chokidar#semver:^1.7.1`
 * When installed one of these ways, other packages depending on Chokidar will
   get Chokidar v1 with long-term support.
 
@@ -161,112 +161,112 @@ chokidar.watch('file', {
 `chokidar.watch(paths, [options])`
 
 * `paths` (string or array of strings). Paths to files, dirs to be watched
-recursively, or glob patterns.
+  recursively, or glob patterns.
 * `options` (object) Options object as defined below:
 
 #### Persistence
 
-* `persistent` (default: `true`). Indicates whether the process
-should continue to run as long as files are being watched. If set to
-`false` when using `fsevents` to watch, no more events will be emitted
-after `ready`, even if the process continues to run.
+* `persistent` (default: `true`). Indicates whether the process should continue
+  to run as long as files are being watched. If set to `false` when using
+  `fsevents` to watch, no more events will be emitted after `ready`, even if the
+  process continues to run.
 
 #### Path filtering
 
 * `ignored` ([anymatch](https://github.com/es128/anymatch)-compatible definition)
-Defines files/paths to be ignored. The whole relative or absolute path is
-tested, not just filename. If a function with two arguments is provided, it
-gets called twice per path - once with a single argument (the path), second
-time with two arguments (the path and the
-[`fs.Stats`](http://nodejs.org/api/fs.html#fs_class_fs_stats)
-object of that path).
-* `ignoreInitial` (default: `false`). If set to `false` then `add`/`addDir` events are also emitted for matching paths while
-instantiating the watching as chokidar discovers these file paths (before the `ready` event).
-* `followSymlinks` (default: `true`). When `false`, only the
-symlinks themselves will be watched for changes instead of following
-the link references and bubbling events through the link's path.
+  Defines files/paths to be ignored. The whole relative or absolute path is
+  tested, not just filename. If a function with two arguments is provided, it
+  gets called twice per path - once with a single argument (the path), second
+  time with two arguments (the path and the
+  [`fs.Stats`](http://nodejs.org/api/fs.html#fs_class_fs_stats) object of that
+  path).
+* `ignoreInitial` (default: `false`). If set to `false` then `add`/`addDir`
+  events are also emitted for matching paths while instantiating the watching as
+  chokidar discovers these file paths (before the `ready` event).
+* `followSymlinks` (default: `true`). When `false`, only the symlinks themselves
+  will be watched for changes instead of following the link references and
+  bubbling events through the link's path.
 * `cwd` (no default). The base directory from which watch `paths` are to be
-derived. Paths emitted with events will be relative to this.
-* `disableGlobbing` (default: `false`). If set to `true` then the strings passed to `.watch()` and `.add()` are treated as
-literal path names, even if they look like globs.
+  derived. Paths emitted with events will be relative to this.
+* `disableGlobbing` (default: `false`). If set to `true` then the strings passed
+  to `.watch()` and `.add()` are treated as literal path names, even if they
+  look like globs.
 
 #### Performance
 
-* `usePolling` (default: `false`).
-Whether to use fs.watchFile (backed by polling), or fs.watch. If polling
-leads to high CPU utilization, consider setting this to `false`. It is
-typically necessary to **set this to `true` to successfully watch files over
-a network**, and it may be necessary to successfully watch files in other
-non-standard situations. Setting to `true` explicitly on OS X overrides the
-`useFsEvents` default. You may also set the CHOKIDAR_USEPOLLING env variable
-to true (1) or false (0) in order to override this option.
+* `usePolling` (default: `false`). Whether to use fs.watchFile (backed by
+  polling), or fs.watch. If polling leads to high CPU utilization, consider
+  setting this to `false`. It is typically necessary to **set this to `true` to
+  successfully watch files over a network**, and it may be necessary to
+  successfully watch files in other non-standard situations. Setting to `true`
+  explicitly on OS X overrides the `useFsEvents` default. You may also set the
+  CHOKIDAR_USEPOLLING env variable to true (1) or false (0) in order to override
+  this option.
 * _Polling-specific settings_ (effective when `usePolling: true`)
   * `interval` (default: `100`). Interval of file system polling. You may also 
     set the CHOKIDAR_INTERVAL env variable to override this option.
-  * `binaryInterval` (default: `300`). Interval of file system
-  polling for binary files.
-  ([see list of binary extensions](https://github.com/sindresorhus/binary-extensions/blob/master/binary-extensions.json))
-* `useFsEvents` (default: `true` on OS X). Whether to use the
-`fsevents` watching interface if available. When set to `true` explicitly
-and `fsevents` is available this supercedes the `usePolling` setting. When
-set to `false` on OS X, `usePolling: true` becomes the default.
+  * `binaryInterval` (default: `300`). Interval of file system polling for
+    binary files.
+    ([see list of binary extensions](https://github.com/sindresorhus/binary-extensions/blob/master/binary-extensions.json))
+* `useFsEvents` (default: `true` on OS X). Whether to use the `fsevents`
+  watching interface if available. When set to `true` explicitly and `fsevents`
+  is available this supercedes the `usePolling` setting. When set to `false` on
+  OS X, `usePolling: true` becomes the default.
 * `alwaysStat` (default: `false`). If relying upon the
-[`fs.Stats`](http://nodejs.org/api/fs.html#fs_class_fs_stats)
-object that may get passed with `add`, `addDir`, and `change` events, set
-this to `true` to ensure it is provided even in cases where it wasn't
-already available from the underlying watch events.
+  [`fs.Stats`](http://nodejs.org/api/fs.html#fs_class_fs_stats) object that may
+  get passed with `add`, `addDir`, and `change` events, set this to `true` to
+  ensure it is provided even in cases where it wasn't already available from the
+  underlying watch events.
 * `depth` (default: `undefined`). If set, limits how many levels of
-subdirectories will be traversed.
-* `awaitWriteFinish` (default: `false`).
-By default, the `add` event will fire when a file first appears on disk, before
-the entire file has been written. Furthermore, in some cases some `change`
-events will be emitted while the file is being written. In some cases,
-especially when watching for large files there will be a need to wait for the
-write operation to finish before responding to a file creation or modification.
-Setting `awaitWriteFinish` to `true` (or a truthy value) will poll file size,
-holding its `add` and `change` events until the size does not change for a
-configurable amount of time. The appropriate duration setting is heavily
-dependent on the OS and hardware. For accurate detection this parameter should
-be relatively high, making file watching much less responsive.
-Use with caution.
-  * *`options.awaitWriteFinish` can be set to an object in order to adjust
-  timing params:*
+  subdirectories will be traversed.
+* `awaitWriteFinish` (default: `false`). By default, the `add` event will fire
+  when a file first appears on disk, before the entire file has been written.
+  Furthermore, in some cases some `change` events will be emitted while the file
+  is being written. In some cases, especially when watching for large files
+  there will be a need to wait for the write operation to finish before
+  responding to a file creation or modification. Setting `awaitWriteFinish` to
+  `true` (or a truthy value) will poll file size, holding its `add` and `change`
+  events until the size does not change for a configurable amount of time. The
+  appropriate duration setting is heavily dependent on the OS and hardware. For
+  accurate detection this parameter should be relatively high, making file
+  watching much less responsive. Use with caution.
+  * _`options.awaitWriteFinish` can be set to an object in order to adjust
+    timing params:_
   * `awaitWriteFinish.stabilityThreshold` (default: 2000). Amount of time in
-  milliseconds for a file size to remain constant before emitting its event.
+    milliseconds for a file size to remain constant before emitting its event.
   * `awaitWriteFinish.pollInterval` (default: 100). File size polling interval.
 
 #### Errors
 * `ignorePermissionErrors` (default: `false`). Indicates whether to watch files
-that don't have read permissions if possible. If watching fails due to `EPERM`
-or `EACCES` with this set to `true`, the errors will be suppressed silently.
+  that don't have read permissions if possible. If watching fails due to `EPERM`
+  or `EACCES` with this set to `true`, the errors will be suppressed silently.
 * `atomic` (default: `true` if `useFsEvents` and `usePolling` are `false`).
-Automatically filters out artifacts that occur when using editors that use
-"atomic writes" instead of writing directly to the source file. If a file is
-re-added within 100 ms of being deleted, Chokidar emits a `change` event
-rather than `unlink` then `add`. If the default of 100 ms does not work well
-for you, you can override it by setting `atomic` to a custom value, in
-milliseconds.
+  Automatically filters out artifacts that occur when using editors that use
+  "atomic writes" instead of writing directly to the source file. If a file is
+  re-added within 100 ms of being deleted, Chokidar emits a `change` event
+  rather than `unlink` then `add`. If the default of 100 ms does not work well
+  for you, you can override it by setting `atomic` to a custom value, in
+  milliseconds.
 
 ### Methods & Events
 
 `chokidar.watch()` produces an instance of `FSWatcher`. Methods of `FSWatcher`:
 
 * `.add(path / paths)`: Add files, directories, or glob patterns for tracking.
-Takes an array of strings or just one string.
-* `.on(event, callback)`: Listen for an FS event.
-Available events: `add`, `addDir`, `change`, `unlink`, `unlinkDir`, `ready`,
-`raw`, `error`.
-Additionally `all` is available which gets emitted with the underlying event
-name and path for every event other than `ready`, `raw`, and `error`.
+  Takes an array of strings or just one string.
+* `.on(event, callback)`: Listen for an FS event. Available events: `add`,
+  `addDir`, `change`, `unlink`, `unlinkDir`, `ready`, `raw`, `error`.
+  Additionally `all` is available which gets emitted with the underlying event
+  name and path for every event other than `ready`, `raw`, and `error`.
 * `.unwatch(path / paths)`: Stop watching files, directories, or glob patterns.
-Takes an array of strings or just one string.
+  Takes an array of strings or just one string.
 * `.close()`: Removes all listeners from watched files.
 * `.getWatched()`: Returns an object representing all the paths on the file
-system being watched by this `FSWatcher` instance. The object's keys are all the
-directories (using absolute paths unless the `cwd` option was used), and the
-values are arrays of the names of the items contained in each directory.
+  system being watched by this `FSWatcher` instance. The object's keys are all
+  the directories (using absolute paths unless the `cwd` option was used), and
+  the values are arrays of the names of the items contained in each directory.
 * `.lastEvent`: An object with two properties: `.type` and `.path`, both
-describing the last emitted event.
+  describing the last emitted event.
 
 ## CLI
 
@@ -275,6 +275,10 @@ If you need a CLI interface for your file watching, check out
 execute a command on each change, or get a stdio stream of change events.
 
 ## Install Troubleshooting
+
+* `npm ERR! code EINTEGRITY`
+  * If npm warns that the tarball data seems to be corrupted, delete your
+    package-lock.json, and install again.
 
 * `npm WARN optional dep failed, continuing fsevents@n.n.n`
   * This message is normal part of how `npm` handles optional dependencies and is
