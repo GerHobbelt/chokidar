@@ -28,6 +28,5 @@ build: off
 version: "{build}"
 
 branches:
-  only:
-    - npm
-    - v1-lts
+  except:
+    - dev
