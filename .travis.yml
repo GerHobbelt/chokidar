@@ -10,5 +10,8 @@ node_js:
 after_script:
   - npm run coverage
 branches:
-  except:
-  - dev
+  only:
+  - npm
+  - v1-lts
+  # After releasing, bump to next anticpated version.
+  - v1-lts@1.7.2
