@@ -1,9 +1,10 @@
+/* eslint-disable no-unused-expressions */
 'use strict';
 
 var chokidar = require('./');
 var chai = require('chai');
 var expect = chai.expect;
-var should = chai.should();
+var should = chai.should(); // eslint-disable-line no-unused-vars
 var sinon = require('sinon');
 var rimraf = require('rimraf');
 var fs = require('graceful-fs');
@@ -12,7 +13,16 @@ var cp = require('child_process');
 chai.use(require('sinon-chai'));
 var os = process.platform;
 
-function getFixturePath (subPath) {
+var fixturesPath = getFixturePath('');
+var mochaIt = it;
+var options;
+var osXFsWatch;
+var slowerDelay;
+var subdir = 0;
+var testCount = 0;
+var win32Polling;
+
+function getFixturePath(subPath) {
   return sysPath.join(
     __dirname,
     'test-fixtures',
@@ -21,24 +31,19 @@ function getFixturePath (subPath) {
   );
 }
 
-var fixturesPath = getFixturePath(''),
-    mochaIt = it,
-    options,
-    osXFsWatch,
-    slowerDelay,
-    subdir = 0,
-    testCount = 0,
-    win32Polling;
-
 if (!fs.readFileSync(__filename).toString().match(/\sit\.only\(/)) {
+  /* eslint-disable no-global-assign */
+  /* eslint-disable no-native-reassign */
   it = function() {
     testCount++;
     mochaIt.apply(this, arguments);
-  }
+  };
   it.skip = function() {
     testCount--;
-    mochaIt.skip.apply(this, arguments)
-  }
+    mochaIt.skip.apply(this, arguments);
+  };
+  /* eslint-enable no-global-assign */
+  /* eslint-enable no-native-reassign */
 }
 
 before(function(done) {
@@ -105,14 +110,14 @@ function runTests(baseopts) {
     if (osXFsWatch) {
       slowerDelay = 200;
     } else {
-      slowerDelay = undefined;
+      slowerDelay = null;
     }
   });
 
   beforeEach(function clean() {
     options = {};
     Object.keys(baseopts).forEach(function(key) {
-      options[key] = baseopts[key]
+      options[key] = baseopts[key];
     });
   });
 
@@ -120,7 +125,10 @@ function runTests(baseopts) {
     return chokidar.watch(fixturesPath, options);
   }
 
-  function waitFor(spies, fn) {
+  function waitFor(spies, fn_) {
+    var fn = fn_;
+    var intrvl;
+    var to;
     function isSpyReady(spy) {
       return Array.isArray(spy) ? spy[0].callCount >= spy[1] : spy.callCount;
     }
@@ -130,17 +138,17 @@ function runTests(baseopts) {
       fn();
       fn = Function.prototype;
     }
-    var intrvl = setInterval(function() {
+    intrvl = setInterval(function() {
       if (spies.every(isSpyReady)) finish();
     }, 5);
-    var to = setTimeout(finish, 3500);
+    to = setTimeout(finish, 3500);
   }
 
   function wClose(watcher) {
-    // lib/fsevents-handler.js will consolidate watchers if the number of watched child paths under a parent path
-    // exceeds a threshold (10)
-    // we therefore cannot close watchers when using fsevents because other paths will depend on them
-    // the fsevents test doesn't use much memory (<20MB on Node 11) so keeping them open shouldn't be a problem
+    // If using fsevents (compiled C code), closing watchers too many times in succession will segfault.
+    // On the other hand, leaving them open and reinstantiating new watchers will consolidate watchers if the number of
+    // watched child paths under a parent path exceeds a threshold (10).
+    // For this test (far more watchers than most use-cases), memory usage will be minimal (<20MB on Node 11).
     if (!baseopts.useFsEvents) {
       watcher.close();
     }
@@ -163,7 +171,8 @@ function runTests(baseopts) {
     });
   });
   describe('watch a directory', function() {
-    var rawSpy, readySpy;
+    var rawSpy;
+    var readySpy;
     beforeEach(function() {
       options.ignoreInitial = true;
       options.alwaysStat = true;
@@ -632,8 +641,8 @@ function runTests(baseopts) {
       var bPath = sysPath.join(parentPath, 'b.txt');
       var addPath = sysPath.join(parentPath, 'add.txt');
       var abPath = sysPath.join(subPath, 'ab.txt');
-      var unlinkArg = {type: 'unlink', path: aPath}
-      var changeArg = {type: 'change', path: abPath}
+      var unlinkArg = {type: 'unlink', path: aPath};
+      var changeArg = {type: 'change', path: abPath};
       fs.mkdirSync(parentPath, 0x1ed);
       fs.mkdirSync(subPath, 0x1ed);
       fs.writeFileSync(aPath, 'b');
@@ -1087,7 +1096,7 @@ function runTests(baseopts) {
                 done();
               });
             }));
-        }, options.usePolling ? 900 : undefined));
+        }, options.usePolling ? 900 : null));
     });
     it('should properly match glob patterns that include a symlinked dir', function(done) {
       var dirSpy = sinon.spy();
@@ -1239,7 +1248,7 @@ function runTests(baseopts) {
                 wClose(watcher);
                 done();
               }, 1000)();
-          });
+            });
         });
         it('should notice when a file appears in an empty directory', function(done) {
           var spy = sinon.spy();
@@ -1279,7 +1288,7 @@ function runTests(baseopts) {
             });
         });
         it('should not emit for preexisting dirs when depth is 0', function(done) {
-          options.depth = 0
+          options.depth = 0;
           var spy = sinon.spy();
           var testPath = getFixturePath('add.txt');
           var testArg = {type: 'add', path: testPath};
@@ -1302,12 +1311,13 @@ function runTests(baseopts) {
     });
     describe('ignored', function() {
       it('should check ignore after stating', function(done) {
+        var testDir;
         options.ignored = function(path, stats) {
           if (path === testDir || !stats) return false;
           return stats.isDirectory();
         };
         var spy = sinon.spy();
-        var testDir = getFixturePath('subdir');
+        testDir = getFixturePath('subdir');
         var addPath = sysPath.join(testDir, 'add.txt');
         var addArg = {type: 'add', path: addPath};
         fs.mkdirSync(testDir, 0x1ed);
@@ -1383,7 +1393,8 @@ function runTests(baseopts) {
     });
     describe('depth', function() {
       beforeEach(function(done) {
-        var i = 0, r = function() { i++ && w(done, options.useFsEvents && 200)(); };
+        var i = 0;
+        var r = function() { i++ && w(done, options.useFsEvents && 200)(); };
         fs.mkdir(getFixturePath('subdir'), 0x1ed, function() {
           fs.writeFile(getFixturePath('subdir/add.txt'), 'b', r);
           fs.mkdir(getFixturePath('subdir/subsub'), 0x1ed, function() {
@@ -1594,7 +1605,7 @@ function runTests(baseopts) {
         var watcher = chokidar.watch('.', options)
           .on('ready', function() {
             w(function() {
-              watcher.on('addDir', spy)
+              watcher.on('addDir', spy);
               fs.rename(testDir, renamedDir, simpleCb);
             }, 1000)();
             waitFor([spy], function() {
@@ -1617,7 +1628,7 @@ function runTests(baseopts) {
         var addArg2 = {type: 'add', path: unlinkPath};
         var changeArg = {type: 'change', path: changePath};
         var unlinkArg = {type: 'unlink', path: unlinkPath};
-        Object.keys(options).forEach(function(key) { options2[key] = options[key] });
+        Object.keys(options).forEach(function(key) { options2[key] = options[key]; });
         options2.cwd = getFixturePath('subdir');
         var watcher = chokidar.watch(getFixturePath('**'), options)
           .on('all', spy)
@@ -1949,7 +1960,7 @@ function runTests(baseopts) {
           expect(watcher.getWatched()).to.deep.equal(expected);
           wClose(watcher);
           done();
-        })
+        });
     });
   });
   describe('unwatch', function() {
@@ -1961,7 +1972,7 @@ function runTests(baseopts) {
       var spy = sinon.spy();
       var subdirPath = getFixturePath('subdir');
       var addPath = sysPath.join(subdirPath, 'add.txt');
-      var changePath = getFixturePath('change.txt')
+      var changePath = getFixturePath('change.txt');
       var testArg = {type: 'change', path: changePath};
       var watchPaths = [subdirPath, changePath];
       var watcher = chokidar.watch(watchPaths, options)
@@ -2173,17 +2184,20 @@ process.stdout.write("closed");\n\
           });
       });
 
-      it('should not attenuate options.usePolling when CHOKIDAR_USEPOLLING is set to an arbitrary value', function(done) {
-        options.usePolling = true;
-        process.env.CHOKIDAR_USEPOLLING = 'foo';
+      it(
+        'should not attenuate options.usePolling when CHOKIDAR_USEPOLLING is set to an arbitrary value',
+        function(done) {
+          options.usePolling = true;
+          process.env.CHOKIDAR_USEPOLLING = 'foo';
 
-        var watcher = chokidar.watch(fixturesPath, options)
-          .on('ready', function() {
-            watcher.options.usePolling.should.be.true;
-            wClose(watcher);
-            done();
-          });
-      });
+          var watcher = chokidar.watch(fixturesPath, options)
+            .on('ready', function() {
+              watcher.options.usePolling.should.be.true;
+              wClose(watcher);
+              done();
+            });
+        }
+      );
     });
     describe('CHOKIDAR_INTERVAL', function() {
       afterEach(function() {

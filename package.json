@@ -1,7 +1,7 @@
 {
   "name": "@electric-eloquence/chokidar",
   "description": "A neat wrapper around node.js fs.watch / fs.watchFile / fsevents.",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "keywords": [
     "fs",
     "watch",
@@ -23,6 +23,8 @@
   "license": "MIT",
   "scripts": {
     "coverage": "nyc report --reporter=text-lcov | coveralls",
+    "lint": "eslint index.js lib test.js",
+    "pretest": "npm run lint",
     "test": "nyc mocha --exit"
   },
   "files": [
@@ -32,6 +34,7 @@
   "devDependencies": {
     "chai": "4.x",
     "coveralls": "^3.0.2",
+    "eslint": "3.x",
     "graceful-fs": "^4.1.15",
     "mocha": "5.x",
     "nyc": "^11.9.0",

@@ -30,7 +30,7 @@ var slashStringOrArray = function(stringOrArray) {
     slashed = stringOrArray;
   }
   return slashed;
-}
+};
 
 var anymatchSlashed = function() {
   var argsNew = [];
@@ -46,15 +46,15 @@ var anymatchSlashed = function() {
     }
   }
   return anymatch.apply(null, argsNew);
-}
+};
 
 var arrify = function(value) {
   if (value == null) return [];
   return Array.isArray(value) ? value : [value];
 };
 
-var flatten = function(list, result) {
-  if (result == null) result = [];
+var flatten = function(list, result_) {
+  var result = result_ || [];
   list.forEach(function(item) {
     if (Array.isArray(item)) {
       flatten(item, result);
@@ -91,6 +91,7 @@ function FSWatcher(_opts) {
   EventEmitter.call(this);
   var opts = {};
   // in case _opts that is passed in is a frozen object
+  // eslint-disable-next-line guard-for-in
   if (_opts) for (var opt in _opts) opts[opt] = _opts[opt];
   this._watched = Object.create(null);
   this._closers = Object.create(null);
@@ -104,7 +105,7 @@ function FSWatcher(_opts) {
   this._symlinkPaths = Object.create(null);
 
   function undef(key) {
-    return opts[key] === undefined;
+    return typeof opts[key] === 'undefined';
   }
 
   // Set up default options.
@@ -131,7 +132,7 @@ function FSWatcher(_opts) {
   // Global override (useful for end-developers that need to force polling for all
   // instances of chokidar, regardless of usage/dependency depth)
   var envPoll = process.env.CHOKIDAR_USEPOLLING;
-  if (envPoll !== undefined) {
+  if (typeof envPoll !== 'undefined') {
     var envLower = envPoll.toLowerCase();
 
     if (envLower === 'false' || envLower === '0') {
@@ -139,7 +140,7 @@ function FSWatcher(_opts) {
     } else if (envLower === 'true' || envLower === '1') {
       opts.usePolling = true;
     } else {
-      opts.usePolling = !!envLower
+      opts.usePolling = Boolean(envLower);
     }
   }
   var envInterval = process.env.CHOKIDAR_INTERVAL;
@@ -191,21 +192,23 @@ inherits(FSWatcher, EventEmitter);
 
 // Private method: Normalize and emit events
 //
-// * event     - string, type of event
-// * path      - string, file or directory path
+// * event_    - string, type of event
+// * path_     - string, file or directory path
 // * val[1..3] - arguments to be passed with event
 //
 // Returns the error if defined, otherwise the value of the
 // FSWatcher instance's `closed` flag
-FSWatcher.prototype._emit = function(event, path, val1, val2, val3) {
+FSWatcher.prototype._emit = function(event_, path_, val1, val2, val3) {
+  var event = event_;
+  var path = path_;
   this.lastEvent.type = event;
   this.lastEvent.path = path;
 
   if (this.options.cwd) path = sysPath.relative(this.options.cwd, path);
   var args = [event, path];
-  if (val3 !== undefined) args.push(val1, val2, val3);
-  else if (val2 !== undefined) args.push(val1, val2);
-  else if (val1 !== undefined) args.push(val1);
+  if (typeof val3 !== 'undefined') args.push(val1, val2, val3);
+  else if (typeof val2 !== 'undefined') args.push(val1, val2);
+  else if (typeof val1 !== 'undefined') args.push(val1);
 
   var awf = this.options.awaitWriteFinish;
   if (awf && this._pendingWrites[path]) {
@@ -216,20 +219,21 @@ FSWatcher.prototype._emit = function(event, path, val1, val2, val3) {
   if (this.options.atomic) {
     if (event === 'unlink') {
       this._pendingUnlinks[path] = args;
-      setTimeout(function() {
-        Object.keys(this._pendingUnlinks).forEach(function(path) {
-          var argsEmit = this._pendingUnlinks[path].slice(0);
-          if (argsEmit[0] === event && argsEmit[1] === path) {
-            // Dereference from this.lastEvent
-            argsEmit[1] = {type: argsEmit[0], path: argsEmit[1]};
-          }
-          this.emit.apply(this, argsEmit);
-          this.emit.apply(this, ['all'].concat(argsEmit));
-          delete this._pendingUnlinks[path];
-        }.bind(this));
-      }.bind(this), typeof this.options.atomic === "number"
-        ? this.options.atomic
-        : 100);
+      setTimeout(
+        function() {
+          Object.keys(this._pendingUnlinks).forEach(function(_path) {
+            var argsEmit = this._pendingUnlinks[_path].slice(0);
+            if (argsEmit[0] === event && argsEmit[1] === _path) {
+              // Dereference from this.lastEvent
+              argsEmit[1] = {type: argsEmit[0], path: argsEmit[1]};
+            }
+            this.emit.apply(this, argsEmit);
+            this.emit.apply(this, ['all'].concat(argsEmit));
+            delete this._pendingUnlinks[_path];
+          }.bind(this));
+        }.bind(this),
+        typeof this.options.atomic === 'number' ? this.options.atomic : 100
+      );
       return this;
     } else if (event === 'add' && this._pendingUnlinks[path]) {
       event = args[0] = 'change';
@@ -273,7 +277,7 @@ FSWatcher.prototype._emit = function(event, path, val1, val2, val3) {
   }
 
   if (
-    this.options.alwaysStat && val1 === undefined &&
+    this.options.alwaysStat && typeof val1 === 'undefined' &&
     (event === 'add' || event === 'addDir' || event === 'change')
   ) {
     var fullPath = this.options.cwd ? sysPath.join(this.options.cwd, path) : path;
@@ -321,11 +325,12 @@ FSWatcher.prototype._throttle = function(action, path, timeout) {
   }
   var throttled = this._throttled[action];
   if (path in throttled) return false;
+  var timeoutObject;
   function clear() {
     delete throttled[path];
     clearTimeout(timeoutObject);
   }
-  var timeoutObject = setTimeout(clear, timeout);
+  timeoutObject = setTimeout(clear, timeout);
   throttled[path] = {timeoutObject: timeoutObject, clear: clear};
   return throttled[path];
 };
@@ -348,7 +353,7 @@ FSWatcher.prototype._awaitWriteFinish = function(path, threshold, event, awfEmit
 
   var now = new Date();
 
-  var awaitWriteFinish = (function (prevStat) {
+  var awaitWriteFinish = (function(prevStat) {
     fs.stat(fullPath, function(err, curStat) {
       if (err) {
         if (err.code !== 'ENOENT') awfEmit(err);
@@ -357,7 +362,7 @@ FSWatcher.prototype._awaitWriteFinish = function(path, threshold, event, awfEmit
 
       var now = new Date();
 
-      if (prevStat && curStat.size != prevStat.size) {
+      if (prevStat && curStat.size !== prevStat.size) {
         this._pendingWrites[path].lastChange = now;
       }
 
@@ -403,7 +408,7 @@ FSWatcher.prototype._isIgnored = function(path, stats) {
     var cwd = this.options.cwd;
     var ignored = this.options.ignored;
     if (cwd && ignored) {
-      ignored = ignored.map(function (path) {
+      ignored = ignored.map(function(path) {
         if (typeof path !== 'string') return path;
         return isAbsolute(path) ? path : sysPath.join(cwd, path);
       });
@@ -425,13 +430,13 @@ FSWatcher.prototype._isIgnored = function(path, stats) {
 // Private method: Provides a set of common helpers and properties relating to
 // symlink and glob handling
 //
-// * path - string, file, directory, or glob pattern being watched
+// * path_ - string, file, directory, or glob pattern being watched
 // * depth - int, at any depth > 0, this isn't a glob
 //
 // Returns object containing helpers for this path
 var replacerRe = /^\.[\/\\]/;
-FSWatcher.prototype._getWatchHelpers = function(path, depth) {
-  path = path.replace(replacerRe, '');
+FSWatcher.prototype._getWatchHelpers = function(path_, depth) {
+  var path = path_.replace(replacerRe, '');
   var watchPath = depth || this.options.disableGlobbing || !isGlob(path) ? path : globParent(path);
   var fullWatchPath = sysPath.resolve(watchPath);
   var hasGlob = watchPath !== path;
@@ -462,25 +467,16 @@ FSWatcher.prototype._getWatchHelpers = function(path, depth) {
     );
   };
 
-  var filterPath = function(entry) {
-    if (entry.stat && entry.stat.isSymbolicLink()) return filterDir(entry);
-    var resolvedPath = entryPath(entry);
-    return (!hasGlob || globFilter(resolvedPath)) &&
-      this._isntIgnored(resolvedPath, entry.stat) &&
-      (this.options.ignorePermissionErrors ||
-        this._hasReadPermissions(entry.stat));
-  }.bind(this);
-
-  var getDirParts = function(path) {
+  var getDirParts = function(_path) {
     if (!hasGlob) return false;
-    var parts = sysPath.relative(watchPath, path).split(/[\/\\]/);
+    var parts = sysPath.relative(watchPath, _path).split(/[\/\\]/);
     return parts;
   };
 
   var dirParts = getDirParts(path);
   if (dirParts && dirParts.length > 1) dirParts.pop();
-  var unmatchedGlob;
 
+  var unmatchedGlob;
   var filterDir = function(entry) {
     if (hasGlob) {
       var entryParts = getDirParts(checkGlobSymlink(entry));
@@ -491,6 +487,14 @@ FSWatcher.prototype._getWatchHelpers = function(path, depth) {
       });
     }
     return !unmatchedGlob && this._isntIgnored(entryPath(entry), entry.stat);
+  }.bind(this);
+
+  var filterPath = function(entry) {
+    if (entry.stat && entry.stat.isSymbolicLink()) return filterDir(entry);
+    var resolvedPath = entryPath(entry);
+    return (!hasGlob || globFilter(resolvedPath)) &&
+      this._isntIgnored(resolvedPath, entry.stat) &&
+      (this.options.ignorePermissionErrors || this._hasReadPermissions(entry.stat));
   }.bind(this);
 
   return {
@@ -615,7 +619,7 @@ FSWatcher.prototype._closePath = function(path) {
   this._closers[path]();
   delete this._closers[path];
   this._getWatchedDir(sysPath.dirname(path)).remove(sysPath.basename(path));
-}
+};
 
 // Public method: Adds paths to be watched on an existing FSWatcher instance
 
@@ -627,13 +631,17 @@ FSWatcher.prototype._closePath = function(path) {
 FSWatcher.prototype.add = function(paths, _origAdd, _internal) {
   var cwd = this.options.cwd;
   this.closed = false;
-  paths = flatten(arrify(paths));
+  // To avoid reassignment of a function param, assign to a different varname
+  // Using "paths" (without underscore) as the function param to avoid confusion
+  // as to what the underscore means when exposing this public method via API
+  // The internal var will be named with the underscore
+  var _paths = flatten(arrify(paths));
 
-  if (!paths.every(isString)) {
-    throw new TypeError('Non-string provided as watch path: ' + paths);
+  if (!_paths.every(isString)) {
+    throw new TypeError('Non-string provided as watch path: ' + _paths);
   }
 
-  if (cwd) paths = paths.map(function(path) {
+  if (cwd) _paths = _paths.map(function(path) {
     if (isAbsolute(path)) {
       return path;
     } else if (path[0] === '!') {
@@ -644,7 +652,7 @@ FSWatcher.prototype.add = function(paths, _origAdd, _internal) {
   });
 
   // set aside negated glob strings
-  paths = paths.filter(function(path) {
+  _paths = _paths.filter(function(path) {
     if (path[0] === '!') {
       this._ignoredPaths[path.substring(1)] = true;
     } else {
@@ -661,13 +669,13 @@ FSWatcher.prototype.add = function(paths, _origAdd, _internal) {
   }, this);
 
   if (this.options.useFsEvents && FsEventsHandler.canUse()) {
-    if (!this._readyCount) this._readyCount = paths.length;
+    if (!this._readyCount) this._readyCount = _paths.length;
     if (this.options.persistent) this._readyCount *= 2;
-    paths.forEach(this._addToFsEvents, this);
+    _paths.forEach(this._addToFsEvents, this);
   } else {
     if (!this._readyCount) this._readyCount = 0;
-    this._readyCount += paths.length;
-    asyncEach(paths, function(path, next) {
+    this._readyCount += _paths.length;
+    asyncEach(_paths, function(path, next) {
       this._addToNodeFs(path, !_internal, 0, 0, _origAdd, function(err, res) {
         if (res) this._emitReady();
         next(err, res);
@@ -690,10 +698,15 @@ FSWatcher.prototype.add = function(paths, _origAdd, _internal) {
 // Returns instance of FSWatcher for chaining.
 FSWatcher.prototype.unwatch = function(paths) {
   if (this.closed) return this;
-  paths = flatten(arrify(paths));
 
-  paths.forEach(function(path) {
+  // To avoid reassignment of a function param, assign to a different varname
+  // Using "paths" (without underscore) as the function param to avoid confusion
+  // as to what the underscore means when exposing this public method via API
+  // The internal var will be named with the underscore
+  var _paths = flatten(arrify(paths));
+  _paths.forEach(function(path_) {
     // convert to absolute path unless relative path already matches
+    var path = path_;
     if (!isAbsolute(path) && !this._closers[path]) {
       if (this.options.cwd) path = sysPath.join(this.options.cwd, path);
       path = sysPath.resolve(path);
