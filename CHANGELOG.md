@@ -1,5 +1,7 @@
 # Chokidar Changelog
 
+### 1.7.2
+
 ### 1.7.1
 * Continuous integration
 * Bumped anymatch version to patch minor vulnerability
