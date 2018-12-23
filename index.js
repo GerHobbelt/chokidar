@@ -49,7 +49,7 @@ var anymatchSlashed = function() {
 };
 
 var arrify = function(value) {
-  if (value == null) return [];
+  if (typeof value === 'undefined') return [];
   return Array.isArray(value) ? value : [value];
 };
 
@@ -447,7 +447,7 @@ FSWatcher.prototype._getWatchHelpers = function(path_, depth) {
   var checkGlobSymlink = function(entry) {
     // only need to resolve once
     // first entry should always have entry.parentDir === ''
-    if (globSymlink == null) {
+    if (globSymlink === null) {
       globSymlink = entry.fullParentDir === fullWatchPath ? false : {
         realPath: entry.fullParentDir,
         linkPath: fullWatchPath
