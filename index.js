@@ -297,7 +297,7 @@ FSWatcher.prototype._emit = function(event_, path_, val1, val2, val3) {
 
 // Private method: Common handler for errors
 //
-// * error  - object, Error instance
+// * error - object, Error instance
 //
 // Returns the error if defined, otherwise the value of the
 // FSWatcher instance's `closed` flag
@@ -337,10 +337,10 @@ FSWatcher.prototype._throttle = function(action, path, timeout) {
 
 // Private method: Awaits write operation to finish
 //
-// * path    - string, path being acted upon
+// * path      - string, path being acted upon
 // * threshold - int, time in milliseconds a file size must be fixed before
-//                    acknowledgeing write operation is finished
-// * awfEmit - function, to be called when ready for event to be emitted
+//               acknowledgeing write operation is finished
+// * awfEmit   - function, to be called when ready for event to be emitted
 // Polls a newly created file for size variations. When files size does not
 // change for 'threshold' milliseconds calls callback.
 FSWatcher.prototype._awaitWriteFinish = function(path, threshold, event, awfEmit) {
@@ -693,7 +693,7 @@ FSWatcher.prototype.add = function(paths, _origAdd, _internal) {
 
 // Public method: Close watchers or start ignoring events from specified paths.
 
-// * paths     - string or array of strings, file/directory paths and/or globs
+// * paths - string or array of strings, file/directory paths and/or globs
 
 // Returns instance of FSWatcher for chaining.
 FSWatcher.prototype.unwatch = function(paths) {
@@ -770,8 +770,8 @@ exports.FSWatcher = FSWatcher;
 
 // Public function: Instantiates watcher with paths to be tracked.
 
-// * paths     - string or array of strings, file/directory paths and/or globs
-// * options   - object, chokidar options
+// * paths   - string or array of strings, file/directory paths and/or globs
+// * options - object, chokidar options
 
 // Returns an instance of FSWatcher for chaining.
 exports.watch = function(paths, options) {
