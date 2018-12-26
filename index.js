@@ -324,14 +324,19 @@ FSWatcher.prototype._throttle = function(action, path, timeout) {
     this._throttled[action] = Object.create(null);
   }
   var throttled = this._throttled[action];
-  if (path in throttled) return false;
+  if (path in throttled) {
+    throttled[path].count++;
+    return false;
+  }
   var timeoutObject;
   function clear() {
+    var count = throttled[path] ? throttled[path].count : 0;
     delete throttled[path];
     clearTimeout(timeoutObject);
+    return count;
   }
   timeoutObject = setTimeout(clear, timeout);
-  throttled[path] = {timeoutObject: timeoutObject, clear: clear};
+  throttled[path] = {timeoutObject: timeoutObject, clear: clear, count: 0};
   return throttled[path];
 };
 
@@ -339,7 +344,7 @@ FSWatcher.prototype._throttle = function(action, path, timeout) {
 //
 // * path      - string, path being acted upon
 // * threshold - int, time in milliseconds a file size must be fixed before
-//               acknowledgeing write operation is finished
+//               acknowledging write operation is finished
 // * awfEmit   - function, to be called when ready for event to be emitted
 // Polls a newly created file for size variations. When files size does not
 // change for 'threshold' milliseconds calls callback.
@@ -355,8 +360,8 @@ FSWatcher.prototype._awaitWriteFinish = function(path, threshold, event, awfEmit
 
   var awaitWriteFinish = (function(prevStat) {
     fs.stat(fullPath, function(err, curStat) {
-      if (err) {
-        if (err.code !== 'ENOENT') awfEmit(err);
+      if (err || !(path in this._pendingWrites)) {
+        if (err && err.code !== 'ENOENT') awfEmit(err);
         return;
       }
 
@@ -629,6 +634,7 @@ FSWatcher.prototype._closePath = function(path) {
 
 // Returns an instance of FSWatcher for chaining.
 FSWatcher.prototype.add = function(paths, _origAdd, _internal) {
+  var disableGlobbing = this.options.disableGlobbing;
   var cwd = this.options.cwd;
   this.closed = false;
   // To avoid reassignment of a function param, assign to a different varname
@@ -642,10 +648,18 @@ FSWatcher.prototype.add = function(paths, _origAdd, _internal) {
   }
 
   if (cwd) _paths = _paths.map(function(path) {
+    var absPath;
     if (isAbsolute(path)) {
-      return path;
+      absPath = path;
     } else if (path[0] === '!') {
-      return '!' + sysPath.join(cwd, path.substring(1));
+      absPath = '!' + sysPath.join(cwd, path.substring(1));
+    } else {
+      absPath = sysPath.join(cwd, path);
+    }
+
+    // Check `path` instead of `absPath` because the cwd portion can't be a glob
+    if (disableGlobbing || !isGlob(path)) {
+      return absPath;
     } else {
       return sysPath.join(cwd, path);
     }
