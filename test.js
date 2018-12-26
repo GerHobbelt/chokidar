@@ -321,6 +321,58 @@ function runTests(baseopts) {
           });
         });
     });
+    it('should emit `unlinkDir` when a directory was renamed', function(done) {
+      var unlinkDirSpy = sinon.spy();
+      var testDir = getFixturePath('subdir');
+      var testDir2 = getFixturePath('subdir2');
+      var testFile = sysPath.join(testDir, 'add.txt');
+      var testArg = {type: 'unlinkDir', path: testDir};
+      fs.mkdir(testDir, function() {
+        fs.writeFile(testFile, Date.now(), function() {
+          var watcher = stdWatcher()
+            .on('ready', readySpy)
+            .on('unlinkDir', unlinkDirSpy)
+            .on('ready', function() {
+              fs.rename(testDir, testDir2, simpleCb);
+              waitFor([unlinkDirSpy.withArgs(testArg)], function() {
+                unlinkDirSpy.withArgs(testArg).should.have.been.calledOnce;
+                wClose(watcher);
+                done();
+              });
+            });
+        });
+      });
+    });
+    if (!baseopts.useFsEvents && !baseopts.usePolling) {
+      it('should emit `unlinkDir` when a directory was renamed and renamed back to its original name', function(done) {
+        var unlinkDirSpy = sinon.spy();
+        var testDir = getFixturePath('subdir');
+        var testDir2 = getFixturePath('subdir2');
+        var testFile = sysPath.join(testDir, 'add.txt');
+        var testArg = {type: 'unlinkDir', path: testDir};
+        var testArg2 = {type: 'unlinkDir', path: testDir2};
+        fs.mkdir(testDir, function() {
+          fs.writeFile(testFile, Date.now(), function() {
+            var watcher = stdWatcher()
+              .on('ready', readySpy)
+              .on('unlinkDir', unlinkDirSpy)
+              .on('ready', function() {
+                fs.rename(testDir, testDir2, w(function() {
+                  fs.rename(testDir2, testDir, simpleCb);
+                }));
+                waitFor([unlinkDirSpy.withArgs(testArg)], function() {
+                  unlinkDirSpy.withArgs(testArg).should.have.been.calledOnce;
+                });
+                waitFor([unlinkDirSpy.withArgs(testArg2)], function() {
+                  unlinkDirSpy.withArgs(testArg2).should.have.been.calledOnce;
+                  wClose(watcher);
+                  done();
+                });
+              });
+          });
+        });
+      });
+    }
     it('should emit `add`, not `change`, when previously deleted file is re-added', function(done) {
       var unlinkSpy = sinon.spy();
       var addSpy = sinon.spy();

@@ -675,8 +675,9 @@ FSWatcher.prototype.add = function(paths, _origAdd, _internal) {
   } else {
     if (!this._readyCount) this._readyCount = 0;
     this._readyCount += _paths.length;
+    var chokidarInstance = this;
     asyncEach(_paths, function(path, next) {
-      this._addToNodeFs(path, !_internal, 0, 0, _origAdd, function(err, res) {
+      this._addToNodeFs(path, !_internal, 0, 0, chokidarInstance, _origAdd, function(err, res) {
         if (res) this._emitReady();
         next(err, res);
       }.bind(this));
