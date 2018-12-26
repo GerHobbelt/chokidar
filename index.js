@@ -636,7 +636,6 @@ FSWatcher.prototype._closePath = function(path) {
 
 // Returns an instance of FSWatcher for chaining.
 FSWatcher.prototype.add = function(paths, _origAdd, _internal) {
-  var disableGlobbing = this.options.disableGlobbing;
   var cwd = this.options.cwd;
   this.closed = false;
   // To avoid reassignment of a function param, assign to a different varname

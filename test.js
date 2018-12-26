@@ -1697,6 +1697,8 @@ function runTests(baseopts) {
                   fs.unlink(testPath2, simpleCb);
                 }, 200));
                 waitFor([spy.withArgs('unlink'), spy2.withArgs('unlink')], function() {
+                  spy.should.have.been.calledWith('add', addArg);
+                  spy.should.have.been.calledWith('unlink', unlinkArg);
                   spy2.should.have.been.calledWith('add', addArg2);
                   spy2.should.have.been.calledWith('unlink', unlinkArg2);
                   wClose(watcher2);
