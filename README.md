@@ -28,7 +28,7 @@ Node.js `fs.watch`:
 * Doesn't report events at all when using editors like Sublime on OS X.
 * Often reports events twice.
 * Emits most changes as `rename`.
-* Has [a lot of other issues](https://github.com/joyent/node/search?q=fs.watch&type=Issues)
+* Has [a lot of other issues](https://github.com/nodejs/node/search?q=fs.watch&type=Issues)
 * Does not provide an easy way to recursively watch file trees.
 
 Node.js `fs.watchFile`:
@@ -203,7 +203,7 @@ chokidar.watch('file', {
   CHOKIDAR_USEPOLLING env variable to true (1) or false (0) in order to override
   this option.
 * _Polling-specific settings_ (effective when `usePolling: true`)
-  * `interval` (default: `100`). Interval of file system polling. You may also 
+  * `interval` (default: `100`). Interval of file system polling. You may also
     set the CHOKIDAR_INTERVAL env variable to override this option.
   * `binaryInterval` (default: `300`). Interval of file system polling for
     binary files.
