@@ -39,17 +39,6 @@ Node.js `fs.watchFile`:
 
 Chokidar resolves these problems.
 
-Initially made for [brunch](http://brunch.io) (an ultra-swift web app build tool), it is now used in
-[gulp](https://github.com/gulpjs/gulp/),
-[karma](http://karma-runner.github.io),
-[PM2](https://github.com/Unitech/PM2),
-[browserify](http://browserify.org/),
-[webpack](http://webpack.github.io/),
-[BrowserSync](http://www.browsersync.io/),
-[Microsoft's Visual Studio Code](https://github.com/microsoft/vscode),
-and [many others](https://www.npmjs.org/browse/depended/chokidar/).
-It has proven itself in production environments.
-
 ## How?
 Chokidar does still rely on the Node.js core `fs` module, but when using
 `fs.watch` and `fs.watchFile` for watching, it normalizes the events it
@@ -277,15 +266,16 @@ execute a command on each change, or get a stdio stream of change events.
 ## Install Troubleshooting
 
 * `npm ERR! code EINTEGRITY`
-  * If npm warns that the tarball data seems to be corrupted, delete your
+  * If npm warns that the tarball seems to be corrupted, delete your
     package-lock.json, and install again.
 
 * `npm WARN optional dep failed, continuing fsevents@n.n.n`
-  * This message is normal part of how `npm` handles optional dependencies and is
-    not indicative of a problem. Even if accompanied by other related error messages,
-    Chokidar should function properly.
+  * This message is normal part of how `npm` handles optional dependencies and
+    is not indicative of a problem. Even if accompanied by other related error
+    messages, Chokidar should function properly.
 
-* `ERR! stack Error: Python executable "python" is v3.4.1, which is not supported by gyp.`
+* `ERR! stack Error: Python executable "python" is v3.4.1, which is not
+  supported by gyp.`
   * You should be able to resolve this by installing python 2.7 and running:
     `npm config set python python2.7`
 
