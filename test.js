@@ -1678,29 +1678,21 @@ function runTests(baseopts) {
         var spy2 = sinon.spy();
         var testPath = sysPath.join(options.cwd, 'add.txt');
         var testPath2 = sysPath.join(options2.cwd, 'add.txt');
-        var addArg = {type: 'add', path: testPath};
-        var addArg2 = {type: 'add', path: testPath2};
-        var unlinkArg = {type: 'unlink', path: testPath};
-        var unlinkArg2 = {type: 'unlink', path: testPath2};
+        var testArg = {type: 'add', path: testPath};
+        var testArg2 = {type: 'add', path: testPath2};
         fs.mkdirSync(options.cwd);
         fs.mkdirSync(options2.cwd);
         var watcher = chokidar.watch('**', options)
           .on('all', spy)
           .on('ready', function() {
-            fs.writeFile(testPath, Date.now(), w(function() {
-              fs.unlink(testPath, simpleCb);
-            }, 200));
+            w(fs.writeFile.bind(fs, testPath, Date.now(), simpleCb))();
             var watcher2 = chokidar.watch('**', options2)
               .on('all', spy2)
               .on('ready', function() {
-                fs.writeFile(testPath2, Date.now(), w(function() {
-                  fs.unlink(testPath2, simpleCb);
-                }, 200));
-                waitFor([spy.withArgs('unlink'), spy2.withArgs('unlink')], function() {
-                  spy.should.have.been.calledWith('add', addArg);
-                  spy.should.have.been.calledWith('unlink', unlinkArg);
-                  spy2.should.have.been.calledWith('add', addArg2);
-                  spy2.should.have.been.calledWith('unlink', unlinkArg2);
+                w(fs.writeFile.bind(fs, testPath2, Date.now(), simpleCb))();
+                waitFor([spy, spy2], function() {
+                  spy.should.have.been.calledWith('add', testArg);
+                  spy2.should.have.been.calledWith('add', testArg2);
                   wClose(watcher2);
                   wClose(watcher);
                   done();
