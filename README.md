@@ -9,15 +9,15 @@ long-term support for gulp at major version 3</a>.
 
 ## Install
 * Latest version (without Git):
-  * `npm install --save https://github.com/electric-eloquence/chokidar/tarball/v1-lts@1.7.2`
-  * Or add `"chokidar": "https://github.com/electric-eloquence/chokidar/tarball/v1-lts@1.7.2"`
+  * `npm install --save https://github.com/electric-eloquence/chokidar/tarball/v1-lts@1.7.3`
+  * Or add `"chokidar": "https://github.com/electric-eloquence/chokidar/tarball/v1-lts@1.7.3"`
     as a dependency in package.json.
 * Latest version (with Git):
   * `npm install --save electric-eloquence/chokidar`
 * Specific version (with Git):
-  * `npm install --save electric-eloquence/chokidar#1.7.2`
+  * `npm install --save electric-eloquence/chokidar#1.7.3`
 * Semver range (with Git):
-  * `npm install --save electric-eloquence/chokidar#semver:^1.7.2`
+  * `npm install --save electric-eloquence/chokidar#semver:^1.7.3`
 * When installed one of these ways, other packages depending on Chokidar will
   get Chokidar v1 with long-term support.
 
