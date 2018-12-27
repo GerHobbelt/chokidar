@@ -2,7 +2,7 @@
 environment:
   matrix:
     - nodejs_version: "6"
-    - nodejs_version: "8"
+    - nodejs_version: "8.12.0"
     - nodejs_version: "10"
     - nodejs_version: "11"
 
@@ -31,3 +31,7 @@ branches:
   only:
     - npm
     - v1-lts
+    # After releasing, bump to next anticpated version.
+    - v1-lts@1.7.2
+
+skip_tags: true

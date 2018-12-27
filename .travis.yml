@@ -3,8 +3,8 @@ os:
   - linux
   - osx
 node_js:
-  - "6"
-  - "8"
+  - "6.14.3"
+  - "8.11.3"
   - "10"
   - "11"
 after_script:
@@ -13,3 +13,5 @@ branches:
   only:
   - npm
   - v1-lts
+  # After releasing, bump to next anticpated version.
+  - v1-lts@1.7.2

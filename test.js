@@ -321,6 +321,58 @@ function runTests(baseopts) {
           });
         });
     });
+    it('should emit `unlinkDir` when a directory was renamed', function(done) {
+      var unlinkDirSpy = sinon.spy();
+      var testDir = getFixturePath('subdir');
+      var testDir2 = getFixturePath('subdir2');
+      var testFile = sysPath.join(testDir, 'add.txt');
+      var testArg = {type: 'unlinkDir', path: testDir};
+      fs.mkdir(testDir, function() {
+        fs.writeFile(testFile, Date.now(), function() {
+          var watcher = stdWatcher()
+            .on('ready', readySpy)
+            .on('unlinkDir', unlinkDirSpy)
+            .on('ready', function() {
+              fs.rename(testDir, testDir2, simpleCb);
+              waitFor([unlinkDirSpy.withArgs(testArg)], function() {
+                unlinkDirSpy.withArgs(testArg).should.have.been.calledOnce;
+                wClose(watcher);
+                done();
+              });
+            });
+        });
+      });
+    });
+    if (!baseopts.useFsEvents && !baseopts.usePolling) {
+      it('should emit `unlinkDir` when a directory was renamed and renamed back to its original name', function(done) {
+        var unlinkDirSpy = sinon.spy();
+        var testDir = getFixturePath('subdir');
+        var testDir2 = getFixturePath('subdir2');
+        var testFile = sysPath.join(testDir, 'add.txt');
+        var testArg = {type: 'unlinkDir', path: testDir};
+        var testArg2 = {type: 'unlinkDir', path: testDir2};
+        fs.mkdir(testDir, function() {
+          fs.writeFile(testFile, Date.now(), function() {
+            var watcher = stdWatcher()
+              .on('ready', readySpy)
+              .on('unlinkDir', unlinkDirSpy)
+              .on('ready', function() {
+                fs.rename(testDir, testDir2, w(function() {
+                  fs.rename(testDir2, testDir, simpleCb);
+                }));
+                waitFor([unlinkDirSpy.withArgs(testArg)], function() {
+                  unlinkDirSpy.withArgs(testArg).should.have.been.calledOnce;
+                });
+                waitFor([unlinkDirSpy.withArgs(testArg2)], function() {
+                  unlinkDirSpy.withArgs(testArg2).should.have.been.calledOnce;
+                  wClose(watcher);
+                  done();
+                });
+              });
+          });
+        });
+      });
+    }
     it('should emit `add`, not `change`, when previously deleted file is re-added', function(done) {
       var unlinkSpy = sinon.spy();
       var addSpy = sinon.spy();
@@ -1618,39 +1670,29 @@ function runTests(baseopts) {
           });
       });
       it('should allow separate watchers to have different cwds', function(done) {
-        options.cwd = fixturesPath;
+        options.cwd = getFixturePath('subdir');
+        var options2 = {};
+        Object.keys(options).forEach(function(key) { options2[key] = options[key]; });
+        options2.cwd = getFixturePath('subdir2');
         var spy = sinon.spy();
         var spy2 = sinon.spy();
-        var options2 = {};
-        var changePath = getFixturePath('change.txt');
-        var unlinkPath = getFixturePath('unlink.txt');
-        var addArg = {type: 'add', path: changePath};
-        var addArg2 = {type: 'add', path: unlinkPath};
-        var changeArg = {type: 'change', path: changePath};
-        var unlinkArg = {type: 'unlink', path: unlinkPath};
-        Object.keys(options).forEach(function(key) { options2[key] = options[key]; });
-        options2.cwd = getFixturePath('subdir');
-        var watcher = chokidar.watch(getFixturePath('**'), options)
+        var testPath = sysPath.join(options.cwd, 'add.txt');
+        var testPath2 = sysPath.join(options2.cwd, 'add.txt');
+        var testArg = {type: 'add', path: testPath};
+        var testArg2 = {type: 'add', path: testPath2};
+        fs.mkdirSync(options.cwd);
+        fs.mkdirSync(options2.cwd);
+        var watcher = chokidar.watch('**', options)
           .on('all', spy)
           .on('ready', function() {
-            var watcher2 = chokidar.watch(fixturesPath, options2)
+            w(fs.writeFile.bind(fs, testPath, Date.now(), simpleCb))();
+            var watcher2 = chokidar.watch('**', options2)
               .on('all', spy2)
               .on('ready', function() {
-                fs.writeFile(getFixturePath('change.txt'), Date.now(), function() {
-                  fs.unlink(getFixturePath('unlink.txt'), simpleCb);
-                });
-                waitFor([
-                  spy.withArgs('unlink'),
-                  spy2.withArgs('unlink')
-                ], function() {
-                  spy.should.have.been.calledWith('add', addArg);
-                  spy.should.have.been.calledWith('add', addArg2);
-                  spy.should.have.been.calledWith('change', changeArg);
-                  if (!osXFsWatch && os === 'darwin') spy.should.have.been.calledWith('unlink', unlinkArg);
-                  spy2.should.have.been.calledWith('add', addArg);
-                  spy2.should.have.been.calledWith('add', addArg2);
-                  spy2.should.have.been.calledWith('change', changeArg);
-                  if (!osXFsWatch && os === 'darwin') spy2.should.have.been.calledWith('unlink', unlinkArg);
+                w(fs.writeFile.bind(fs, testPath2, Date.now(), simpleCb))();
+                waitFor([spy, spy2], function() {
+                  spy.should.have.been.calledWith('add', testArg);
+                  spy2.should.have.been.calledWith('add', testArg2);
                   wClose(watcher2);
                   wClose(watcher);
                   done();

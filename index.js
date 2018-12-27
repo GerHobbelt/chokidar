@@ -49,7 +49,7 @@ var anymatchSlashed = function() {
 };
 
 var arrify = function(value) {
-  if (value == null) return [];
+  if (typeof value === 'undefined') return [];
   return Array.isArray(value) ? value : [value];
 };
 
@@ -203,8 +203,9 @@ FSWatcher.prototype._emit = function(event_, path_, val1, val2, val3) {
   var path = path_;
   this.lastEvent.type = event;
   this.lastEvent.path = path;
+  var cwd = this.options.cwd;
 
-  if (this.options.cwd) path = sysPath.relative(this.options.cwd, path);
+  if (cwd) path = sysPath.relative(cwd, path);
   var args = [event, path];
   if (typeof val3 !== 'undefined') args.push(val1, val2, val3);
   else if (typeof val2 !== 'undefined') args.push(val1, val2);
@@ -224,8 +225,9 @@ FSWatcher.prototype._emit = function(event_, path_, val1, val2, val3) {
           Object.keys(this._pendingUnlinks).forEach(function(_path) {
             var argsEmit = this._pendingUnlinks[_path].slice(0);
             if (argsEmit[0] === event && argsEmit[1] === _path) {
+              var fullPath = cwd ? sysPath.join(cwd, _path) : _path;
               // Dereference from this.lastEvent
-              argsEmit[1] = {type: argsEmit[0], path: argsEmit[1]};
+              argsEmit[1] = {type: argsEmit[0], path: fullPath};
             }
             this.emit.apply(this, argsEmit);
             this.emit.apply(this, ['all'].concat(argsEmit));
@@ -280,7 +282,7 @@ FSWatcher.prototype._emit = function(event_, path_, val1, val2, val3) {
     this.options.alwaysStat && typeof val1 === 'undefined' &&
     (event === 'add' || event === 'addDir' || event === 'change')
   ) {
-    var fullPath = this.options.cwd ? sysPath.join(this.options.cwd, path) : path;
+    var fullPath = cwd ? sysPath.join(cwd, path) : path;
     fs.stat(fullPath, function(error, stats) {
       // Suppress event when fs.stat fails, to avoid sending undefined 'stat'
       if (error || !stats) return;
@@ -297,7 +299,7 @@ FSWatcher.prototype._emit = function(event_, path_, val1, val2, val3) {
 
 // Private method: Common handler for errors
 //
-// * error  - object, Error instance
+// * error - object, Error instance
 //
 // Returns the error if defined, otherwise the value of the
 // FSWatcher instance's `closed` flag
@@ -324,23 +326,28 @@ FSWatcher.prototype._throttle = function(action, path, timeout) {
     this._throttled[action] = Object.create(null);
   }
   var throttled = this._throttled[action];
-  if (path in throttled) return false;
+  if (path in throttled) {
+    throttled[path].count++;
+    return false;
+  }
   var timeoutObject;
   function clear() {
+    var count = throttled[path] ? throttled[path].count : 0;
     delete throttled[path];
     clearTimeout(timeoutObject);
+    return count;
   }
   timeoutObject = setTimeout(clear, timeout);
-  throttled[path] = {timeoutObject: timeoutObject, clear: clear};
+  throttled[path] = {timeoutObject: timeoutObject, clear: clear, count: 0};
   return throttled[path];
 };
 
 // Private method: Awaits write operation to finish
 //
-// * path    - string, path being acted upon
+// * path      - string, path being acted upon
 // * threshold - int, time in milliseconds a file size must be fixed before
-//                    acknowledgeing write operation is finished
-// * awfEmit - function, to be called when ready for event to be emitted
+//               acknowledging write operation is finished
+// * awfEmit   - function, to be called when ready for event to be emitted
 // Polls a newly created file for size variations. When files size does not
 // change for 'threshold' milliseconds calls callback.
 FSWatcher.prototype._awaitWriteFinish = function(path, threshold, event, awfEmit) {
@@ -355,8 +362,8 @@ FSWatcher.prototype._awaitWriteFinish = function(path, threshold, event, awfEmit
 
   var awaitWriteFinish = (function(prevStat) {
     fs.stat(fullPath, function(err, curStat) {
-      if (err) {
-        if (err.code !== 'ENOENT') awfEmit(err);
+      if (err || !(path in this._pendingWrites)) {
+        if (err && err.code !== 'ENOENT') awfEmit(err);
         return;
       }
 
@@ -447,7 +454,7 @@ FSWatcher.prototype._getWatchHelpers = function(path_, depth) {
   var checkGlobSymlink = function(entry) {
     // only need to resolve once
     // first entry should always have entry.parentDir === ''
-    if (globSymlink == null) {
+    if (globSymlink === null) {
       globSymlink = entry.fullParentDir === fullWatchPath ? false : {
         realPath: entry.fullParentDir,
         linkPath: fullWatchPath
@@ -642,13 +649,16 @@ FSWatcher.prototype.add = function(paths, _origAdd, _internal) {
   }
 
   if (cwd) _paths = _paths.map(function(path) {
+    var absPath;
     if (isAbsolute(path)) {
-      return path;
+      absPath = path;
     } else if (path[0] === '!') {
-      return '!' + sysPath.join(cwd, path.substring(1));
+      absPath = '!' + sysPath.join(cwd, path.substring(1));
     } else {
-      return sysPath.join(cwd, path);
+      absPath = sysPath.join(cwd, path);
     }
+
+    return absPath;
   });
 
   // set aside negated glob strings
@@ -675,8 +685,9 @@ FSWatcher.prototype.add = function(paths, _origAdd, _internal) {
   } else {
     if (!this._readyCount) this._readyCount = 0;
     this._readyCount += _paths.length;
+    var chokidarInstance = this;
     asyncEach(_paths, function(path, next) {
-      this._addToNodeFs(path, !_internal, 0, 0, _origAdd, function(err, res) {
+      this._addToNodeFs(path, !_internal, 0, 0, chokidarInstance, _origAdd, function(err, res) {
         if (res) this._emitReady();
         next(err, res);
       }.bind(this));
@@ -693,7 +704,7 @@ FSWatcher.prototype.add = function(paths, _origAdd, _internal) {
 
 // Public method: Close watchers or start ignoring events from specified paths.
 
-// * paths     - string or array of strings, file/directory paths and/or globs
+// * paths - string or array of strings, file/directory paths and/or globs
 
 // Returns instance of FSWatcher for chaining.
 FSWatcher.prototype.unwatch = function(paths) {
@@ -770,8 +781,8 @@ exports.FSWatcher = FSWatcher;
 
 // Public function: Instantiates watcher with paths to be tracked.
 
-// * paths     - string or array of strings, file/directory paths and/or globs
-// * options   - object, chokidar options
+// * paths   - string or array of strings, file/directory paths and/or globs
+// * options - object, chokidar options
 
 // Returns an instance of FSWatcher for chaining.
 exports.watch = function(paths, options) {
