@@ -291,8 +291,8 @@ execute a command on each change, or get a stdio stream of change events.
 [appveyor-image]: https://img.shields.io/appveyor/ci/e2tha-e/chokidar.svg?label=appveyor
 [appveyor-url]: https://ci.appveyor.com/project/e2tha-e/chokidar
 
-[coveralls-image]: https://img.shields.io/coveralls/electric-eloquence/chokidar/v1-lts.svg
-[coveralls-url]: https://coveralls.io/r/electric-eloquence/chokidar
+[coveralls-image]: https://coveralls.io/repos/github/electric-eloquence/chokidar/badge.svg?branch=v1-lts
+[coveralls-url]: https://coveralls.io/github/electric-eloquence/chokidar?branch=v1-lts
 
 [version-image]: https://img.shields.io/node/v/@electric-eloquence/chokidar.svg
 
