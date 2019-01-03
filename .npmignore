@@ -1,0 +1,4 @@
+*.log
+.*
+appveyor.yml
+test*
