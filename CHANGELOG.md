@@ -1,5 +1,7 @@
 # Chokidar Changelog
 
+### 1.7.3
+
 ### 1.7.2
 * Better handling of renamed and removed directories
 * Better handling of paths when cwd is submitted

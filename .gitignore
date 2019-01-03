@@ -1,9 +1,8 @@
+*.log
 .*.swp
 .DS_Store
-.nyc_output
-node_modules
+.coveralls.yml
+.nyc_output/
+node_modules/
 package-lock.json
-test-fixtures
-coverage
-*.bak
-*.log
+test-fixtures/
