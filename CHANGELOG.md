@@ -1,6 +1,7 @@
 # Chokidar Changelog
 
 ### 1.7.3
+* Minor maintenance and doc updates
 
 ### 1.7.2
 * Better handling of renamed and removed directories
