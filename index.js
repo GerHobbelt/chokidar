@@ -406,7 +406,7 @@ FSWatcher.prototype._awaitWriteFinish = function(path, threshold, event, awfEmit
 // * stats - object, result of fs.stat
 //
 // Returns boolean
-var dotRe = /\..*\.(sw[px])$|\~$|\.subl.*\.tmp/;
+var dotRe = /\..*\.swp$|~$|\.subl.*\.tmp$/;
 FSWatcher.prototype._isIgnored = function(path, stats) {
   if (dotRe.test(path)) {
     if (this.options.atomic || this.options.ignoreTmpFiles) {

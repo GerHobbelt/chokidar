@@ -235,8 +235,8 @@ chokidar.watch('file', {
   custom value, in milliseconds.
 * `ignoreTmpFiles` (default: `true`). Ignores editor artifacts filtered by the
   non-false `atomic` option, but without any delay. Specifically ignores the
-  `.swp`, `.swx`, `.tmp`, and `~` extensions, and filenames with a `.subl.`
-  substring. The `atomic` option is less useful these days since the Sublime
+  `.swp` and `~` extensions, and filenames with a `.subl` substring and `.tmp`
+  extension. The `atomic` option is less useful these days since the Sublime
   editor was the primary culprit for atomic saves, and
   [atomic saves are now off by default](http://docs.sublimetext.info/en/latest/reference/settings.html#file-and-directory-settings).
 
