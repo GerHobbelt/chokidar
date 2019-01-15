@@ -227,13 +227,18 @@ chokidar.watch('file', {
 * `ignorePermissionErrors` (default: `false`). Indicates whether to watch files
   that don't have read permissions if possible. If watching fails due to `EPERM`
   or `EACCES` with this set to `true`, the errors will be suppressed silently.
-* `atomic` (default: `true` if `useFsEvents` and `usePolling` are `false`).
-  Automatically filters out artifacts that occur when using editors that use
-  "atomic writes" instead of writing directly to the source file. If a file is
-  re-added within 100 ms of being deleted, Chokidar emits a `change` event
-  rather than `unlink` then `add`. If the default of 100 ms does not work well
-  for you, you can override it by setting `atomic` to a custom value, in
-  milliseconds.
+* `atomic` (default: `false`). Automatically filters out artifacts that occur
+  when using editors that use "atomic saves" instead of saving directly to the
+  source file. If a file is re-added within 100 ms of being deleted, Chokidar
+  emits a `change` event rather than `unlink` then `add`. If the default of 100
+  ms does not work well for you, you can override it by setting `atomic` to a
+  custom value, in milliseconds.
+* `ignoreTmpFiles` (default: `true`). Ignores editor artifacts filtered by the
+  non-false `atomic` option, but without any delay. Specifically ignores the
+  `.swp`, `.swx`, `.tmp`, and `~` extensions, and filenames with a `.subl.`
+  substring. The `atomic` option is less useful these days since the Sublime
+  editor was the primary culprit for atomic saves, and
+  [atomic saves are now off by default](http://docs.sublimetext.info/en/latest/reference/settings.html#file-and-directory-settings).
 
 ### Methods & Events
 

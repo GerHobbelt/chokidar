@@ -1591,6 +1591,7 @@ function runTests(baseopts) {
     describe('atomic', function() {
       beforeEach(function() {
         options.atomic = true;
+        options.ignoreTmpFiles = false;
         options.ignoreInitial = true;
       });
       it('should ignore vim/emacs/Sublime swapfiles', function(done) {
@@ -1616,6 +1617,38 @@ function runTests(baseopts) {
                 }, 300)();
               }, 300)();
             }, 300)();
+          });
+      });
+    });
+    describe('ignoreTmpFiles', function() {
+      beforeEach(function() {
+        options.atomic = false;
+        options.ignoreTmpFiles = true;
+        options.ignoreInitial = true;
+      });
+      it('should ignore vim/emacs/Sublime swapfiles', function(done) {
+        var spy = sinon.spy();
+        var watcher = stdWatcher()
+          .on('all', spy)
+          .on('ready', function() {
+            fs.writeFile(getFixturePath('.change.txt.swp'), 'a', simpleCb); // vim
+            fs.writeFile(getFixturePath('add.txt\~'), 'a', simpleCb); // vim/emacs
+            fs.writeFile(getFixturePath('.subl5f4.tmp'), 'a', simpleCb); // sublime
+            w(function() {
+              fs.writeFile(getFixturePath('.change.txt.swp'), 'c', simpleCb);
+              fs.writeFile(getFixturePath('add.txt\~'), 'c', simpleCb);
+              fs.writeFile(getFixturePath('.subl5f4.tmp'), 'c', simpleCb);
+              w(function() {
+                fs.unlink(getFixturePath('.change.txt.swp'), simpleCb);
+                fs.unlink(getFixturePath('add.txt\~'), simpleCb);
+                fs.unlink(getFixturePath('.subl5f4.tmp'), simpleCb);
+                w(function() {
+                  spy.should.not.have.been.called;
+                  wClose(watcher);
+                  done();
+                })();
+              })();
+            })();
           });
       });
     });

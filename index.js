@@ -148,8 +148,7 @@ function FSWatcher(_opts) {
     opts.interval = parseInt(envInterval);
   }
 
-  // Editor atomic write normalization enabled by default with fs.watch
-  if (undef('atomic')) opts.atomic = !opts.usePolling && !opts.useFsEvents;
+  if (undef('ignoreTmpFiles')) opts.ignoreTmpFiles = true;
   if (opts.atomic) this._pendingUnlinks = Object.create(null);
 
   if (undef('followSymlinks')) opts.followSymlinks = true;
@@ -409,7 +408,11 @@ FSWatcher.prototype._awaitWriteFinish = function(path, threshold, event, awfEmit
 // Returns boolean
 var dotRe = /\..*\.(sw[px])$|\~$|\.subl.*\.tmp/;
 FSWatcher.prototype._isIgnored = function(path, stats) {
-  if (this.options.atomic && dotRe.test(path)) return true;
+  if (dotRe.test(path)) {
+    if (this.options.atomic || this.options.ignoreTmpFiles) {
+      return true;
+    }
+  }
 
   if (!this._userIgnored) {
     var cwd = this.options.cwd;
