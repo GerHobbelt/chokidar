@@ -572,7 +572,7 @@ function runTests(baseopts) {
       var watcher = chokidar.watch('**', options)
         .on('add', spy)
         .on('ready', function() {
-         fs.writeFile(testFile, Date.now(), simpleCb);
+          fs.writeFile(testFile, Date.now(), simpleCb);
           w(function() {
             spy.should.not.have.been.called;
             wClose(watcher);
