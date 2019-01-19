@@ -50,8 +50,7 @@ receives, often checking for truth by getting file stats and/or dir contents.
 
 On Mac OS X, chokidar by default uses a native extension exposing the Darwin
 `FSEvents` API. This provides very efficient recursive watching compared with
-implementations like `kqueue` available on most \*nix platforms. Chokidar still
-does have to do some work to normalize the events received that way as well.
+implementations like `kqueue` available on most \*nix platforms.
 
 On other platforms, the `fs.watch`-based implementation is the default, which
 avoids polling and keeps CPU usage down. Be advised that chokidar will initiate
@@ -62,14 +61,14 @@ more than needed.
 ## Getting started
 Install with npm:
 
-    npm install chokidar --save
+    npm install @electric-eloquence/chokidar --save
 
 Then `require` and use it in your code:
 
 ```javascript
 var chokidar = require('@electric-eloquence/chokidar');
 
-// One-liner for current directory, ignores .dotfiles
+// One-liner for current directory. Ignores .dotfiles.
 chokidar.watch('.', {ignored: /(^|[\/\\])\../}).on('all', (type, event) => {
   console.log(type, event);
 });
@@ -114,7 +113,7 @@ watcher.on('change', (event, stats) => {
 watcher.add('new-file');
 watcher.add(['new-file-2', 'new-file-3', '**/other-file*']);
 
-// Get list of actual paths being watched on the filesystem
+// Get list of actual paths being watched on the filesystem.
 var watchedPaths = watcher.getWatched();
 
 // Un-watch some files.
@@ -136,6 +135,7 @@ chokidar.watch('file', {
   usePolling: true,
   interval: 100,
   binaryInterval: 300,
+  useFsEvents: false,
   alwaysStat: false,
   depth: 99,
   awaitWriteFinish: {
@@ -144,7 +144,8 @@ chokidar.watch('file', {
   },
 
   ignorePermissionErrors: false,
-  atomic: true // or a custom 'atomicity delay', in milliseconds (default 100)
+  atomic: true, // or a custom 'atomicity delay', in milliseconds (default 100)
+  ignoreTmpFiles: true
 });
 
 ```
@@ -265,12 +266,6 @@ chokidar.watch('file', {
   the values are arrays of the names of the items contained in each directory.
 * `.lastEvent`: An object with two properties: `.type` and `.path`, both
   describing the last emitted event.
-
-## CLI
-
-If you need a CLI interface for your file watching, check out
-[chokidar-cli](https://github.com/kimmobrunfeldt/chokidar-cli), allowing you to
-execute a command on each change, or get a stdio stream of change events.
 
 ## Install Troubleshooting
 

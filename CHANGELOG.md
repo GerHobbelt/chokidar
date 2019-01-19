@@ -1,5 +1,8 @@
 # Chokidar Changelog
 
+### 1.7.4
+* Important doc updates
+
 ### 1.7.3
 * Downgrading optional dependency (Mac only) fsevents to major version 1
 * Otherwise, minor maintenance and doc updates
