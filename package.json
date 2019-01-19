@@ -46,7 +46,7 @@
     "sinon-chai": "3.x"
   },
   "optionalDependencies": {
-    "fsevents": "^1.2.6"
+    "fsevents": "^1.2.7"
   },
   "dependencies": {
     "anymatch": "^2.0.0",
