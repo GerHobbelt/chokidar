@@ -40,13 +40,13 @@
     "eslint": "3.x",
     "graceful-fs": "^4.1.15",
     "mocha": "5.x",
-    "nyc": "^11.9.0",
+    "nyc": "^13.1.0",
     "rimraf": "^2.6.2",
     "sinon": "7.x",
     "sinon-chai": "3.x"
   },
   "optionalDependencies": {
-    "fsevents": "^2.0.1"
+    "fsevents": "^1.2.7"
   },
   "dependencies": {
     "anymatch": "^2.0.0",

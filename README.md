@@ -14,18 +14,16 @@ with the usual `npm install` command.
 Instead, follow these instructions:
 
 ## Install
-* Latest version (without Git):
-  * `npm install --save https://github.com/electric-eloquence/chokidar/tarball/v1-lts@1.7.3`
-  * Or add `"chokidar": "https://github.com/electric-eloquence/chokidar/tarball/v1-lts@1.7.3"`
-    as a dependency in package.json.
-* Latest version (with Git):
-  * `npm install --save electric-eloquence/chokidar`
-* Specific version (with Git):
-  * `npm install --save electric-eloquence/chokidar#1.7.3`
-* Semver range (with Git):
-  * `npm install --save electric-eloquence/chokidar#semver:^1.7.3`
-* When installed one of these ways, other packages depending on Chokidar will
-  get Chokidar v1 with long-term support.
+
+```shell
+npm install --save @electric-eloquence/chokidar
+```
+
+## Use
+
+```javascript
+var chokidar = require('@electric-eloquence/chokidar');
+```
 
 ## Why Chokidar?
 Node.js `fs.watch`:
@@ -69,7 +67,7 @@ Install with npm:
 Then `require` and use it in your code:
 
 ```javascript
-var chokidar = require('chokidar');
+var chokidar = require('@electric-eloquence/chokidar');
 
 // One-liner for current directory, ignores .dotfiles
 chokidar.watch('.', {ignored: /(^|[\/\\])\../}).on('all', (type, event) => {
@@ -125,7 +123,7 @@ watcher.unwatch('new-file*');
 // Stop watching.
 watcher.close();
 
-// Full list of options. See below for descriptions. (do not use this example)
+// Full list of options. See below for descriptions. (Do not use this example.)
 chokidar.watch('file', {
   persistent: true,
 
@@ -235,13 +233,18 @@ chokidar.watch('file', {
 * `ignorePermissionErrors` (default: `false`). Indicates whether to watch files
   that don't have read permissions if possible. If watching fails due to `EPERM`
   or `EACCES` with this set to `true`, the errors will be suppressed silently.
-* `atomic` (default: `true` if `useFsEvents` and `usePolling` are `false`).
-  Automatically filters out artifacts that occur when using editors that use
-  "atomic writes" instead of writing directly to the source file. If a file is
-  re-added within 100 ms of being deleted, Chokidar emits a `change` event
-  rather than `unlink` then `add`. If the default of 100 ms does not work well
-  for you, you can override it by setting `atomic` to a custom value, in
-  milliseconds.
+* `atomic` (default: `false`). Automatically filters out artifacts that occur
+  when using editors that use "atomic saves" instead of saving directly to the
+  source file. If a file is re-added within 100 ms of being deleted, Chokidar
+  emits a `change` event rather than `unlink` then `add`. If the default of 100
+  ms does not work well for you, you can override it by setting `atomic` to a
+  custom value, in milliseconds.
+* `ignoreTmpFiles` (default: `true`). Ignores editor artifacts filtered by the
+  non-false `atomic` option, but without any delay. Specifically ignores the
+  `.swp` and `~` extensions, and filenames with a `.subl` substring and `.tmp`
+  extension. The `atomic` option is less useful these days since the Sublime
+  editor was the primary culprit for atomic saves, and
+  [atomic saves are now off by default](http://docs.sublimetext.info/en/latest/reference/settings.html#file-and-directory-settings).
 
 ### Methods & Events
 
@@ -291,10 +294,10 @@ execute a command on each change, or get a stdio stream of change events.
 [snyk-image]: https://snyk.io/test/github/electric-eloquence/chokidar/v1-lts/badge.svg
 [snyk-url]: https://snyk.io/test/github/electric-eloquence/chokidar/v1-lts
 
-[travis-image]: https://img.shields.io/travis/electric-eloquence/chokidar.svg
+[travis-image]: https://img.shields.io/travis/electric-eloquence/chokidar.svg?label=mac%20%26%20linux
 [travis-url]: https://travis-ci.org/electric-eloquence/chokidar
 
-[appveyor-image]: https://img.shields.io/appveyor/ci/e2tha-e/chokidar.svg?label=appveyor
+[appveyor-image]: https://img.shields.io/appveyor/ci/e2tha-e/chokidar.svg?label=windows
 [appveyor-url]: https://ci.appveyor.com/project/e2tha-e/chokidar
 
 [coveralls-image]: https://coveralls.io/repos/github/electric-eloquence/chokidar/badge.svg?branch=v1-lts
