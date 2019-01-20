@@ -68,8 +68,8 @@ Then `require` and use it in your code:
 ```javascript
 var chokidar = require('@electric-eloquence/chokidar');
 
-// One-liner for current directory. Ignores .dotfiles.
-chokidar.watch('.', {ignored: /(^|[\/\\])\../}).on('all', (type, event) => {
+// One-liner for current directory.
+chokidar.watch('.').on('all', (type, event) => {
   console.log(type, event);
 });
 ```
@@ -79,7 +79,6 @@ chokidar.watch('.', {ignored: /(^|[\/\\])\../}).on('all', (type, event) => {
 
 // Initialize watcher.
 var watcher = chokidar.watch('file, dir, glob, or array', {
-  ignored: /(^|[\/\\])\../,
   persistent: true
 });
 
@@ -87,25 +86,51 @@ var watcher = chokidar.watch('file, dir, glob, or array', {
 var log = console.log.bind(console);
 // Add event listeners.
 watcher
-  .on('add', event => log(`File ${event.path} had a ${event.type} event`))
-  .on('change', event => log(`File ${event.path} had a ${event.type} event`))
-  .on('unlink', event => log(`File ${event.path} had a ${event.type} event`));
+  .on(
+    'add',
+    event => log(`File ${event.path} had a ${event.type} event`)
+  )
+  .on(
+    'change',
+    event => log(`File ${event.path} had a ${event.type} event`)
+  )
+  .on(
+    'unlink',
+    event => log(`File ${event.path} had a ${event.type} event`)
+  );
 
 // More possible events.
 watcher
-  .on('addDir', event => log(`Directory ${event.path} had a ${event.type} event`))
-  .on('unlinkDir', event => log(`Directory ${event.path} had a ${event.type} event`))
-  .on('error', error => log(`Watcher error: ${error}`))
-  .on('ready', () => log('Initial scan complete. Ready for changes'))
-  .on('raw', (event, path, details) => {
-    log('Raw event info:', event, path, details);
-  });
+  .on(
+    'addDir',
+    event => log(`Directory ${event.path} had a ${event.type} event`)
+  )
+  .on(
+    'unlinkDir',
+    event => log(`Directory ${event.path} had a ${event.type} event`)
+  )
+  .on(
+    'error',
+    error => log(`Watcher error: ${error}`)
+  )
+  .on(
+    'ready',
+    () => log('Initial scan complete. Ready for changes')
+  )
+  .on(
+    'raw',
+    (event, path, details) => {
+      log('Raw event info:', event, path, details);
+    }
+  );
 
-// 'add', 'addDir' and 'change' events also receive stat() results as second
-// argument when available: http://nodejs.org/api/fs.html#fs_class_fs_stats
+// 'add', 'addDir' and 'change' events also receive stat() results as
+// second argument when available:
+// http://nodejs.org/api/fs.html#fs_class_fs_stats
 watcher.on('change', (event, stats) => {
   if (stats) {
-    console.log(`File ${event.path} had a ${event.type} event: size to ${stats.size}`);
+    console.log(`File ${event.path} had a ${event.type} event:`);
+    console.log(`size to ${stats.size}`);
   }
 });
 
@@ -122,7 +147,8 @@ watcher.unwatch('new-file*');
 // Stop watching.
 watcher.close();
 
-// Full list of options. See below for descriptions. (Do not use this example.)
+// Full list of options. See below for descriptions.
+// (Do not use this example.)
 chokidar.watch('file', {
   persistent: true,
 
@@ -144,7 +170,7 @@ chokidar.watch('file', {
   },
 
   ignorePermissionErrors: false,
-  atomic: true, // or a custom 'atomicity delay', in milliseconds (default 100)
+  atomic: true, // or a custom delay in milliseconds (default 100)
   ignoreTmpFiles: true
 });
 
