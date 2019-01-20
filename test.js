@@ -567,6 +567,22 @@ function runTests(baseopts) {
       var spy = sinon.spy();
       var testDir = getFixturePath('subdir');
       var testFile = getFixturePath('add.txt');
+      fs.mkdirSync(testDir);
+      var watcher = chokidar.watch(testDir, options)
+        .on('add', spy)
+        .on('ready', function() {
+          fs.writeFile(testFile, Date.now(), simpleCb);
+          w(function() {
+            spy.should.not.have.been.called;
+            wClose(watcher);
+            done();
+          }, 1000)();
+        });
+    });
+    it('should ignore the ".." path within a watched directory using the cwd option', function(done) {
+      var spy = sinon.spy();
+      var testDir = getFixturePath('subdir');
+      var testFile = getFixturePath('add.txt');
       options.cwd = testDir;
       fs.mkdirSync(testDir);
       var watcher = chokidar.watch('**', options)
