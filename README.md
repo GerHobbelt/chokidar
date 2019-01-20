@@ -9,7 +9,7 @@ long-term support for gulp at major version 3</a>.
 
 The scoping of this package makes it an entirely different package from unscoped
 Chokidar and precludes any access from any Chokidar dependents if it installed 
-with the usual `npm install` command.
+with the usual `npm install chokidar` command.
 
 Instead, follow these instructions:
 
