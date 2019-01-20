@@ -1,6 +1,13 @@
-# Chokidar [![Known Vulnerabilities][snyk-image]][snyk-url] [![Mac/Linux Build Status][travis-image]][travis-url] [![Windows Build Status][appveyor-image]][appveyor-url] [![Coverage Status][coveralls-image]][coveralls-url] ![Node Version][version-image] [![License][license-image]][license-url]
+# Chokidar
 
 > A neat wrapper around node.js fs.watch / fs.watchFile / fsevents.
+
+[![Known Vulnerabilities][snyk-image]][snyk-url]
+[![Mac/Linux Build Status][travis-image]][travis-url]
+[![Windows Build Status][appveyor-image]][appveyor-url]
+[![Coverage Status][coveralls-image]][coveralls-url]
+![Node Version][version-image]
+[![License][license-image]][license-url]
 
 ### This package provides long-term support for Chokidar at major version 1.
 
