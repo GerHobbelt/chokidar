@@ -27,6 +27,7 @@ var chokidar = require('@electric-eloquence/chokidar');
 ```
 
 ## Why Chokidar?
+
 Node.js `fs.watch`:
 
 * Doesn't report filenames on OS X.
@@ -45,6 +46,7 @@ Node.js `fs.watchFile`:
 Chokidar resolves these problems.
 
 ## How?
+
 Chokidar does still rely on the Node.js core `fs` module, but when using
 `fs.watch` and `fs.watchFile` for watching, it normalizes the events it
 receives, often checking for truth by getting file stats and/or dir contents.
@@ -59,7 +61,8 @@ watchers recursively for everything within scope of the paths that have been
 specified, so be judicious about not wasting system resources by watching much
 more than needed.
 
-## Getting started
+## Getting Started
+
 Install with npm:
 
     npm install @electric-eloquence/chokidar --save
@@ -192,7 +195,7 @@ chokidar.watch('file', {
   `fsevents` to watch, no more events will be emitted after `ready`, even if the
   process continues to run.
 
-#### Path filtering
+#### Path Filtering
 
 * `ignored` ([anymatch](https://github.com/es128/anymatch)-compatible definition)
   Defines files/paths to be ignored. The whole relative or absolute path is
@@ -258,6 +261,7 @@ chokidar.watch('file', {
   * `awaitWriteFinish.pollInterval` (default: 100). File size polling interval.
 
 #### Errors
+
 * `ignorePermissionErrors` (default: `false`). Indicates whether to watch files
   that don't have read permissions if possible. If watching fails due to `EPERM`
   or `EACCES` with this set to `true`, the errors will be suppressed silently.
@@ -294,7 +298,7 @@ chokidar.watch('file', {
 * `.lastEvent`: An object with two properties: `.type` and `.path`, both
   describing the last emitted event.
 
-## Install Troubleshooting
+## Troubleshooting Installation
 
 * `npm ERR! code EINTEGRITY`
   * If npm warns that the tarball seems to be corrupted, delete your
@@ -312,6 +316,16 @@ chokidar.watch('file', {
 
 * `gyp ERR! stack Error: not found: make`
   * On Mac, install the XCode command-line tools
+
+## Acknowledgments
+
+This package is forked from 
+[an upstream source](https://github.com/paulmillr/chokidar) with the same name. 
+This fork is purely derivative and does not add functionality. Credit and 
+gratitude is due for 
+[the contributors to the source](https://github.com/paulmillr/chokidar/graphs/contributors). 
+It is our intent to work in their favor by maintaining an older version of their 
+project, which may otherwise be too burdensome for them to commit time to.
 
 [snyk-image]: https://snyk.io/test/github/electric-eloquence/chokidar/v1-lts/badge.svg
 [snyk-url]: https://snyk.io/test/github/electric-eloquence/chokidar/v1-lts
