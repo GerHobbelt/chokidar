@@ -1,6 +1,7 @@
 # Chokidar Changelog
 
 ### 1.7.5
+* Acknowledgements in readme
 
 ### 1.7.4
 * Important doc updates
