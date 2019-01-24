@@ -14,4 +14,4 @@ branches:
   - npm
   - v1-lts
   # After releasing, bump to next anticpated version.
-  - v1-lts@1.7.4
+  - v1-lts@1.7.5
