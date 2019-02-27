@@ -2294,18 +2294,18 @@ process.stdout.write("closed");\n\
 
       it(
         'should not attenuate options.usePolling when CHOKIDAR_USEPOLLING is set to an arbitrary value',
-        function(done) {
-          options.usePolling = true;
-          process.env.CHOKIDAR_USEPOLLING = 'foo';
+        function(done)
+      {
+        options.usePolling = true;
+        process.env.CHOKIDAR_USEPOLLING = 'foo';
 
-          var watcher = chokidar.watch(fixturesPath, options)
-            .on('ready', function() {
-              watcher.options.usePolling.should.be.true;
-              wClose(watcher);
-              done();
-            });
-        }
-      );
+        var watcher = chokidar.watch(fixturesPath, options)
+          .on('ready', function() {
+            watcher.options.usePolling.should.be.true;
+            wClose(watcher);
+            done();
+          });
+      });
     });
     describe('CHOKIDAR_INTERVAL', function() {
       afterEach(function() {
