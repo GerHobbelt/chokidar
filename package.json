@@ -37,9 +37,9 @@
   "devDependencies": {
     "chai": "4.x",
     "coveralls": "3.x",
-    "eslint": "3.x",
+    "eslint": "5.x",
     "graceful-fs": "^4.1.15",
-    "mocha": "5.x",
+    "mocha": "6.x",
     "nyc": "13.x",
     "rimraf": "^2.6.2",
     "sinon": "7.x",

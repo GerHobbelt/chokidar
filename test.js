@@ -1633,15 +1633,15 @@ function runTests(baseopts) {
           .on('all', spy)
           .on('ready', function() {
             fs.writeFile(getFixturePath('.change.txt.swp'), 'a', simpleCb); // vim
-            fs.writeFile(getFixturePath('add.txt\~'), 'a', simpleCb); // vim/emacs
+            fs.writeFile(getFixturePath('add.txt~'), 'a', simpleCb); // vim/emacs
             fs.writeFile(getFixturePath('.subl5f4.tmp'), 'a', simpleCb); // sublime
             w(function() {
               fs.writeFile(getFixturePath('.change.txt.swp'), 'c', simpleCb);
-              fs.writeFile(getFixturePath('add.txt\~'), 'c', simpleCb);
+              fs.writeFile(getFixturePath('add.txt~'), 'c', simpleCb);
               fs.writeFile(getFixturePath('.subl5f4.tmp'), 'c', simpleCb);
               w(function() {
                 fs.unlink(getFixturePath('.change.txt.swp'), simpleCb);
-                fs.unlink(getFixturePath('add.txt\~'), simpleCb);
+                fs.unlink(getFixturePath('add.txt~'), simpleCb);
                 fs.unlink(getFixturePath('.subl5f4.tmp'), simpleCb);
                 w(function() {
                   spy.should.not.have.been.called;
@@ -1665,15 +1665,15 @@ function runTests(baseopts) {
           .on('all', spy)
           .on('ready', function() {
             fs.writeFile(getFixturePath('.change.txt.swp'), 'a', simpleCb); // vim
-            fs.writeFile(getFixturePath('add.txt\~'), 'a', simpleCb); // vim/emacs
+            fs.writeFile(getFixturePath('add.txt~'), 'a', simpleCb); // vim/emacs
             fs.writeFile(getFixturePath('.subl5f4.tmp'), 'a', simpleCb); // sublime
             w(function() {
               fs.writeFile(getFixturePath('.change.txt.swp'), 'c', simpleCb);
-              fs.writeFile(getFixturePath('add.txt\~'), 'c', simpleCb);
+              fs.writeFile(getFixturePath('add.txt~'), 'c', simpleCb);
               fs.writeFile(getFixturePath('.subl5f4.tmp'), 'c', simpleCb);
               w(function() {
                 fs.unlink(getFixturePath('.change.txt.swp'), simpleCb);
-                fs.unlink(getFixturePath('add.txt\~'), simpleCb);
+                fs.unlink(getFixturePath('add.txt~'), simpleCb);
                 fs.unlink(getFixturePath('.subl5f4.tmp'), simpleCb);
                 w(function() {
                   spy.should.not.have.been.called;
@@ -2292,10 +2292,8 @@ process.stdout.write("closed");\n\
           });
       });
 
-      it(
-        'should not attenuate options.usePolling when CHOKIDAR_USEPOLLING is set to an arbitrary value',
-        function(done)
-      {
+      it('should not attenuate options.usePolling when CHOKIDAR_USEPOLLING is set to an arbitrary value\
+', function(done) {
         options.usePolling = true;
         process.env.CHOKIDAR_USEPOLLING = 'foo';
 
