@@ -1,5 +1,7 @@
 # Chokidar Changelog
 
+### 1.7.7
+
 ### 1.7.6
 * Bumped fsevents to major version 2, using Node's native N-API
 
