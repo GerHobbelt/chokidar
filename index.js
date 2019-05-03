@@ -444,6 +444,7 @@ FSWatcher.prototype._isIgnored = function(path, stats) {
 // * depth - int, at any depth > 0, this isn't a glob
 //
 // Returns object containing helpers for this path
+// eslint-disable-next-line no-useless-escape
 var replacerRe = /^\.[\/\\]/;
 FSWatcher.prototype._getWatchHelpers = function(path_, depth) {
   var path = path_.replace(replacerRe, '');
@@ -479,6 +480,7 @@ FSWatcher.prototype._getWatchHelpers = function(path_, depth) {
 
   var getDirParts = function(_path) {
     if (!hasGlob) return false;
+    // eslint-disable-next-line no-useless-escape
     var parts = sysPath.relative(watchPath, _path).split(/[\/\\]/);
     return parts;
   };
