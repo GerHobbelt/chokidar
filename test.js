@@ -149,13 +149,7 @@ function runTests(baseopts) {
   }
 
   function wClose(watcher) {
-    // If using fsevents (compiled C code), closing watchers too many times in succession will segfault.
-    // On the other hand, leaving them open and reinstantiating new watchers will consolidate watchers if the number of
-    // watched child paths under a parent path exceeds a threshold (10).
-    // For this test (far more watchers than most use-cases), memory usage will be minimal (<20MB on Node 11).
-    if (!baseopts.useFsEvents) {
-      watcher.close();
-    }
+    watcher.close();
   }
 
   describe('instantiate correctly', function() {
