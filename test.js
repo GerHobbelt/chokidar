@@ -107,7 +107,7 @@ function runTests(baseopts) {
   baseopts.persistent = true;
 
   before(function() {
-    // flags for bypassing special-case test failures on CI
+    // Flags for bypassing special-case test failures on CI.
     osXFsWatch = platform === 'darwin' && !baseopts.usePolling && !baseopts.useFsEvents;
     win32Polling = platform === 'win32' && baseopts.usePolling;
 
@@ -1145,7 +1145,7 @@ function runTests(baseopts) {
             fs.writeFileSync(testPath, Date.now());
             fs.unlinkSync(linkPath);
             fs.symlinkSync(testPath, linkPath);
-          }, options.usePolling ? 1200 : 300)();
+          }, options.usePolling ? 1200 : 900)();
           waitFor([spy.withArgs('change', linkPath)], function() {
             spy.should.have.been.calledWith('add', addArg);
             spy.should.have.been.calledWith('add', addArg2);
