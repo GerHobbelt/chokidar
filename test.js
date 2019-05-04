@@ -11,7 +11,9 @@ var fs = require('graceful-fs');
 var sysPath = require('path');
 var cp = require('child_process');
 chai.use(require('sinon-chai'));
-var os = process.platform;
+var os = require('os');
+var osMajor = parseInt(os.release().split('.')[0], 10);
+var platform = process.platform;
 
 var fixturesPath = getFixturePath('');
 var mochaIt = it;
@@ -87,7 +89,9 @@ describe('chokidar', function() {
     chokidar.watch.should.be.a('function');
   });
 
-  if (os === 'darwin') {
+  // Darwin major version 15 is macOS 10.11 El Capitan.
+  // fsevents does not work in 10.11 El Capitan and lower.
+  if (platform === 'darwin' && osMajor > 15) {
     describe('fsevents (native extension)', runTests.bind(this, {useFsEvents: true}));
   }
   describe('fs.watch (non-polling)', runTests.bind(this, {usePolling: false, useFsEvents: false}));
@@ -104,8 +108,8 @@ function runTests(baseopts) {
 
   before(function() {
     // flags for bypassing special-case test failures on CI
-    osXFsWatch = os === 'darwin' && !baseopts.usePolling && !baseopts.useFsEvents;
-    win32Polling = os === 'win32' && baseopts.usePolling;
+    osXFsWatch = platform === 'darwin' && !baseopts.usePolling && !baseopts.useFsEvents;
+    win32Polling = platform === 'win32' && baseopts.usePolling;
 
     if (osXFsWatch) {
       slowerDelay = 200;
