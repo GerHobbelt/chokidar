@@ -11,7 +11,9 @@ var fs = require('graceful-fs');
 var sysPath = require('path');
 var cp = require('child_process');
 chai.use(require('sinon-chai'));
-var os = process.platform;
+var os = require('os');
+var osMajor = parseInt(os.release().split('.')[0], 10);
+var platform = process.platform;
 
 var fixturesPath = getFixturePath('');
 var mochaIt = it;
@@ -87,7 +89,9 @@ describe('chokidar', function() {
     chokidar.watch.should.be.a('function');
   });
 
-  if (os === 'darwin') {
+  // Darwin major version 15 is macOS 10.11 El Capitan.
+  // fsevents does not work in 10.11 El Capitan and lower.
+  if (platform === 'darwin' && osMajor > 15) {
     describe('fsevents (native extension)', runTests.bind(this, {useFsEvents: true}));
   }
   describe('fs.watch (non-polling)', runTests.bind(this, {usePolling: false, useFsEvents: false}));
@@ -103,9 +107,9 @@ function runTests(baseopts) {
   baseopts.persistent = true;
 
   before(function() {
-    // flags for bypassing special-case test failures on CI
-    osXFsWatch = os === 'darwin' && !baseopts.usePolling && !baseopts.useFsEvents;
-    win32Polling = os === 'win32' && baseopts.usePolling;
+    // Flags for bypassing special-case test failures on CI.
+    osXFsWatch = platform === 'darwin' && !baseopts.usePolling && !baseopts.useFsEvents;
+    win32Polling = platform === 'win32' && baseopts.usePolling;
 
     if (osXFsWatch) {
       slowerDelay = 200;
@@ -145,13 +149,7 @@ function runTests(baseopts) {
   }
 
   function wClose(watcher) {
-    // If using fsevents (compiled C code), closing watchers too many times in succession will segfault.
-    // On the other hand, leaving them open and reinstantiating new watchers will consolidate watchers if the number of
-    // watched child paths under a parent path exceeds a threshold (10).
-    // For this test (far more watchers than most use-cases), memory usage will be minimal (<20MB on Node 11).
-    if (!baseopts.useFsEvents) {
-      watcher.close();
-    }
+    watcher.close();
   }
 
   describe('instantiate correctly', function() {
@@ -1147,7 +1145,7 @@ function runTests(baseopts) {
             fs.writeFileSync(testPath, Date.now());
             fs.unlinkSync(linkPath);
             fs.symlinkSync(testPath, linkPath);
-          }, options.usePolling ? 1200 : 300)();
+          }, options.usePolling ? 1200 : 900)();
           waitFor([spy.withArgs('change', linkPath)], function() {
             spy.should.have.been.calledWith('add', addArg);
             spy.should.have.been.calledWith('add', addArg2);

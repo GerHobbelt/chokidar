@@ -1,5 +1,8 @@
 # Chokidar Changelog
 
+### 1.7.7
+* Disabling fsevents for macOS versions < Sierra
+
 ### 1.7.6
 * Bumped fsevents to major version 2, using Node's native N-API
 
