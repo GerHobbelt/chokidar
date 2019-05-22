@@ -988,7 +988,7 @@ function runTests(baseopts) {
     });
   });
   describe('watch symlinks', function() {
-    if (os === 'win32') return;
+    if (platform === 'win32') return;
     var linkedDir;
     beforeEach(function(done) {
       linkedDir = sysPath.resolve(fixturesPath, '..', subdir + '-link');
@@ -1410,7 +1410,7 @@ function runTests(baseopts) {
         var watcher = chokidar.watch(testDir, options)
           .on('add', spy)
           .on('ready', function() {
-            if (os !== 'win32') {
+            if (platform !== 'win32') {
               spy.should.have.been.calledOnce;
               spy.should.have.been.calledWith(addArg);
             }
@@ -1538,7 +1538,7 @@ function runTests(baseopts) {
           });
       });
       it('should respect depth setting when following symlinks', function(done) {
-        if (os === 'win32') return done(); // skip on windows
+        if (platform === 'win32') return done(); // skip on windows
         options.depth = 1;
         var spy = sinon.spy();
         var subPath = getFixturePath('subdir');
@@ -1563,7 +1563,7 @@ function runTests(baseopts) {
           });
       });
       it('should respect depth setting when following a new symlink', function(done) {
-        if (os === 'win32') return done(); // skip on windows
+        if (platform === 'win32') return done(); // skip on windows
         options.depth = 1;
         options.ignoreInitial = true;
         var spy = sinon.spy();
@@ -1818,7 +1818,7 @@ function runTests(baseopts) {
       describe('false', function() {
         beforeEach(function() { options.ignorePermissionErrors = false; });
         it('should not watch files without read permissions', function(done) {
-          if (os === 'win32') return done();
+          if (platform === 'win32') return done();
           var spy = sinon.spy();
           var watcher = stdWatcher()
             .on('all', spy)
@@ -2031,7 +2031,7 @@ function runTests(baseopts) {
             fs.writeFile(testPath, 'edit', w(function() {
               fs.unlink(testPath, simpleCb);
               waitFor([spy.withArgs('unlink')], function() {
-                if (!osXFsWatch && os === 'darwin') spy.should.have.been.calledWith('unlink', unlinkArg);
+                if (!osXFsWatch && platform === 'darwin') spy.should.have.been.calledWith('unlink', unlinkArg);
                 spy.should.not.have.been.calledWith('change', ignoredArg);
                 wClose(watcher);
                 done();
