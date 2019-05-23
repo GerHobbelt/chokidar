@@ -1,6 +1,7 @@
 # Chokidar Changelog
 
 ### 1.7.9
+* Fixed bug that disabled fsevents for wrong macOS versions
 
 ### 1.7.8
 * Disabling fsevents for macOS versions < Sierra

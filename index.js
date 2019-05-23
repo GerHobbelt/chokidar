@@ -122,18 +122,24 @@ function FSWatcher(_opts) {
   if (undef('disableGlobbing')) opts.disableGlobbing = false;
   this.enableBinaryInterval = opts.binaryInterval !== opts.interval;
 
-  // Enable fsevents on OS X when polling isn't explicitly enabled.
-  if (undef('useFsEvents')) opts.useFsEvents = !opts.usePolling;
-
-  // If we can't use fsevents, ensure the options reflect it's disabled.
-  if (!FsEventsHandler.canUse()) opts.useFsEvents = false;
-
   // Darwin major version 15 is macOS 10.11 El Capitan.
   // fsevents does not work in 10.11 El Capitan and lower.
-  if (isDarwin && osMajor > 15) opts.useFsEvents = false;
+  /* istanbul ignore next */
+  if (isDarwin && osMajor <= 15) {
+    opts.useFsEvents = false;
+
+  // If we can't use fsevents, ensure the options reflect it's disabled.
+  } else if (!FsEventsHandler.canUse()) {
+    opts.useFsEvents = false;
+
+  // Enable fsevents on OS X when polling isn't explicitly enabled.
+  } else if (undef('useFsEvents')) {
+    opts.useFsEvents = !opts.usePolling;
+  }
 
   // Use polling on Mac if not using fsevents.
   // Other platforms use non-polling fs.watch.
+  /* istanbul ignore if */
   if (undef('usePolling') && !opts.useFsEvents) {
     opts.usePolling = isDarwin;
   }
@@ -225,6 +231,7 @@ FSWatcher.prototype._emit = function(event_, path_, val1, val2, val3) {
     return this;
   }
 
+  /* istanbul ignore if */
   if (this.options.atomic) {
     if (event === 'unlink') {
       this._pendingUnlinks[path] = args;
@@ -263,6 +270,7 @@ FSWatcher.prototype._emit = function(event_, path_, val1, val2, val3) {
 
   if (awf && (event === 'add' || event === 'change') && this._readyEmitted) {
     var awfEmit = function(err, stats) {
+      /* istanbul ignore if */
       if (err) {
         event = args[0] = 'error';
         args[1] = err;
@@ -314,6 +322,7 @@ FSWatcher.prototype._emit = function(event_, path_, val1, val2, val3) {
 FSWatcher.prototype._handleError = function(error) {
   var code = error && error.code;
   var ipe = this.options.ignorePermissionErrors;
+  /* istanbul ignore if */
   if (error &&
     code !== 'ENOENT' &&
     code !== 'ENOTDIR' &&
