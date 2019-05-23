@@ -1,7 +1,9 @@
 'use strict';
 var EventEmitter = require('events').EventEmitter;
 var fs = require('fs');
+var os = require('os');
 var sysPath = require('path');
+
 var asyncEach = require('async-each');
 var anymatch = require('anymatch');
 var globParent = require('glob-parent');
@@ -12,6 +14,9 @@ var slash = require('slash');
 
 var NodeFsHandler = require('./lib/nodefs-handler');
 var FsEventsHandler = require('./lib/fsevents-handler');
+
+var osMajor = parseInt(os.release().split('.')[0], 10);
+var isDarwin = process.platform === 'darwin';
 
 var slashStringOrArray = function(stringOrArray) {
   var slashed;
@@ -123,10 +128,14 @@ function FSWatcher(_opts) {
   // If we can't use fsevents, ensure the options reflect it's disabled.
   if (!FsEventsHandler.canUse()) opts.useFsEvents = false;
 
+  // Darwin major version 15 is macOS 10.11 El Capitan.
+  // fsevents does not work in 10.11 El Capitan and lower.
+  if (isDarwin && osMajor > 15) opts.useFsEvents = false;
+
   // Use polling on Mac if not using fsevents.
   // Other platforms use non-polling fs.watch.
   if (undef('usePolling') && !opts.useFsEvents) {
-    opts.usePolling = process.platform === 'darwin';
+    opts.usePolling = isDarwin;
   }
 
   // Global override (useful for end-developers that need to force polling for all
