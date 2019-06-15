@@ -17,7 +17,7 @@ long-term support for gulp at major version 3</a>.
 ## Install
 
 ```shell
-npm install --save @electric-eloquence/chokidar
+npm install @electric-eloquence/chokidar
 ```
 
 ## Use
