@@ -508,15 +508,15 @@ FSWatcher.prototype._getWatchHelpers = function(path_, depth) {
         return globstar || !entryParts[i] || anymatchSlashed(part, entryParts[i]);
       });
     }
-    return !unmatchedGlob && this._isntIgnored(entryPath(entry), entry.stat);
+    return !unmatchedGlob && this._isntIgnored(entryPath(entry), entry.stats);
   }.bind(this);
 
   var filterPath = function(entry) {
-    if (entry.stat && entry.stat.isSymbolicLink()) return filterDir(entry);
+    if (entry.stats && entry.stats.isSymbolicLink()) return filterDir(entry);
     var resolvedPath = entryPath(entry);
     return (!hasGlob || globFilter(resolvedPath)) &&
-      this._isntIgnored(resolvedPath, entry.stat) &&
-      (this.options.ignorePermissionErrors || this._hasReadPermissions(entry.stat));
+      this._isntIgnored(resolvedPath, entry.stats) &&
+      (this.options.ignorePermissionErrors || this._hasReadPermissions(entry.stats));
   }.bind(this);
 
   return {
