@@ -14,18 +14,6 @@
 This in turn provides <a href="https://github.com/electric-eloquence/gulp#readme" target="_blank">
 long-term support for gulp at major version 3</a>.
 
-## Install
-
-```shell
-npm install @electric-eloquence/chokidar
-```
-
-## Use
-
-```javascript
-var chokidar = require('@electric-eloquence/chokidar');
-```
-
 ## Why Chokidar?
 
 Node.js `fs.watch`:
@@ -65,7 +53,7 @@ more than needed.
 
 Install with npm:
 
-    npm install @electric-eloquence/chokidar --save
+    npm install @electric-eloquence/chokidar
 
 Then `require` and use it in your code:
 
