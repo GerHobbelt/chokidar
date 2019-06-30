@@ -1,6 +1,8 @@
 # Chokidar Changelog
 
 ### 1.7.10
+* Very minor updates to readme, license, and continuous integration configs
+* Checking that macOS > El Capitan in FsEventsHandler.canUse instead of index.js
 
 ### 1.7.9
 * Fixed bug that disabled fsevents for wrong macOS versions
