@@ -3,7 +3,7 @@
 ### 1.7.10
 * Very minor updates to readme, license, and continuous integration configs
 * Checking that macOS > El Capitan in FsEventsHandler.canUse instead of index.js
-* Updated vulnerable dependencies anymatch and readdirp
+* Updated anymatch to major version 3
 
 ### 1.7.9
 * Fixed bug that disabled fsevents for wrong macOS versions
