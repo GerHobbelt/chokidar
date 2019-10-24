@@ -6,7 +6,7 @@
 [![Mac/Linux Build Status][travis-image]][travis-url]
 [![Windows Build Status][appveyor-image]][appveyor-url]
 [![Coverage Status][coveralls-image]][coveralls-url]
-![Node Version][version-image]
+![Node Version][node-version-image]
 [![License][license-image]][license-url]
 
 ### This package provides long-term support for Chokidar at major version 1.
@@ -318,16 +318,16 @@ project, which may otherwise be burdensome for them to commit time to.
 [snyk-image]: https://snyk.io/test/github/electric-eloquence/chokidar/v1-lts/badge.svg
 [snyk-url]: https://snyk.io/test/github/electric-eloquence/chokidar/v1-lts
 
-[travis-image]: https://img.shields.io/travis/electric-eloquence/chokidar.svg?label=mac%20%26%20linux
+[travis-image]: https://img.shields.io/travis/electric-eloquence/chokidar/v1-lts.svg?label=mac%20%26%20linux
 [travis-url]: https://travis-ci.org/electric-eloquence/chokidar
 
-[appveyor-image]: https://img.shields.io/appveyor/ci/e2tha-e/chokidar.svg?label=windows
+[appveyor-image]: https://img.shields.io/appveyor/ci/e2tha-e/chokidar/v1-lts.svg?label=windows
 [appveyor-url]: https://ci.appveyor.com/project/e2tha-e/chokidar
 
-[coveralls-image]: https://coveralls.io/repos/github/electric-eloquence/chokidar/badge.svg?branch=v1-lts
+[coveralls-image]: https://img.shields.io/coveralls/electric-eloquence/chokidar/v1-lts.svg
 [coveralls-url]: https://coveralls.io/github/electric-eloquence/chokidar?branch=v1-lts
 
-[version-image]: https://img.shields.io/node/v/@electric-eloquence/chokidar.svg
+[node-version-image]: https://img.shields.io/node/v/@electric-eloquence/chokidar.svg
 
 [license-image]: https://img.shields.io/github/license/electric-eloquence/chokidar.svg
 [license-url]: https://raw.githubusercontent.com/electric-eloquence/chokidar/v1-lts/LICENSE
