@@ -12,7 +12,7 @@ var sysPath = require('path');
 var cp = require('child_process');
 chai.use(require('sinon-chai'));
 var os = require('os');
-var osMajor = parseInt(os.release().split('.')[0], 10);
+var osMajor = parseInt(os.release().split('.')[0]);
 var platform = process.platform;
 
 var fixturesPath = getFixturePath('');
