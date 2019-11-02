@@ -1625,13 +1625,13 @@ function runTests(baseopts) {
         options.ignoreTmpFiles = false;
         options.ignoreInitial = true;
       });
-      it('ignores vim/emacs/Sublime swapfiles', function(done) {
+      it('ignores Vim/Emacs/Sublime swapfiles', function(done) {
         var spy = sinon.spy();
         var watcher = stdWatcher()
           .on('all', spy)
           .on('ready', function() {
             fs.writeFile(getFixturePath('.change.txt.swp'), 'a', simpleCb); // vim
-            fs.writeFile(getFixturePath('add.txt~'), 'a', simpleCb); // vim/emacs
+            fs.writeFile(getFixturePath('add.txt~'), 'a', simpleCb); // emacs
             fs.writeFile(getFixturePath('.subl5f4.tmp'), 'a', simpleCb); // sublime
             w(function() {
               fs.writeFile(getFixturePath('.change.txt.swp'), 'c', simpleCb);
