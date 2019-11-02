@@ -15,7 +15,6 @@ var os = require('os');
 var osMajor = parseInt(os.release().split('.')[0]);
 var platform = process.platform;
 
-var fixturesPath = getFixturePath('');
 var mochaIt = it;
 var options;
 var osXFsWatch;
@@ -32,6 +31,8 @@ function getFixturePath(subPath) {
     subPath
   );
 }
+
+var fixturesPath = getFixturePath('');
 
 if (!fs.readFileSync(__filename).toString().match(/\sit\.only\(/)) {
   /* eslint-disable no-global-assign */
@@ -2320,7 +2321,7 @@ process.stdout.write("closed");\n\
       });
     });
   });
-  describe('non-persistence', function() {
+  describe('non-persistent', function() {
     beforeEach(function() {
       options.persistent = false;
     });
