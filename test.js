@@ -2320,4 +2320,47 @@ process.stdout.write("closed");\n\
       });
     });
   });
+  describe('non-persistence', function() {
+    beforeEach(function() {
+      options.persistent = false;
+    });
+
+    after(function() {
+      options.persistent = true;
+    });
+
+    if (baseopts.useFsEvents) {
+      it('does not emit events after the initial watch event when using fsevents', function(done) {
+        var spy = sinon.spy();
+        var testPath = getFixturePath('unlink.txt');
+        var watcher = stdWatcher()
+          .on('unlink', spy)
+          .on('ready', function() {
+            fs.unlink(testPath, simpleCb);
+            waitFor([spy], function() {
+              spy.should.not.have.been.called;
+              wClose(watcher);
+              done();
+            });
+          });
+      });
+    }
+
+    if (!baseopts.useFsEvents) {
+      it('emits events after the initial watch event when using fs.watch or fs.watchFile', function(done) {
+        var spy = sinon.spy();
+        var testPath = getFixturePath('unlink.txt');
+        var watcher = stdWatcher()
+          .on('unlink', spy)
+          .on('ready', function() {
+            fs.unlink(testPath, simpleCb);
+            waitFor([spy], function() {
+              spy.should.have.been.called;
+              wClose(watcher);
+              done();
+            });
+          });
+      });
+    }
+  });
 }
