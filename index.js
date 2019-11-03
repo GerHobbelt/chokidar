@@ -169,7 +169,6 @@ function FSWatcher(_opts) {
 
     this._pendingWrites = Object.create(null);
   }
-  if (opts.ignored) opts.ignored = arrify(opts.ignored);
 
   this._isntIgnored = function(path, stat) {
     return !this._isIgnored(path, stat);
@@ -425,20 +424,21 @@ FSWatcher.prototype._isIgnored = function(path, stats) {
   }
 
   if (!this._userIgnored) {
-    var cwd = this.options.cwd;
-    var ignored = this.options.ignored;
-    if (cwd && ignored) {
-      ignored = ignored.map(function(path) {
+    var ignored;
+    if (this.options.cwd) {
+      ignored = arrify(this.options.ignored).map(function(path) {
         if (typeof path !== 'string') return path;
-        return isAbsolute(path) ? path : sysPath.join(cwd, path);
+        return isAbsolute(path) ? path : sysPath.join(this.options.cwd, path);
       });
+    } else {
+      ignored = arrify(this.options.ignored);
     }
-    var paths = arrify(ignored)
-      .filter(function(path) {
-        return typeof path === 'string' && !isGlob(path);
-      }).map(function(path) {
-        return path + '/**';
-      });
+    var paths = ignored.filter(function(path) {
+      return typeof path === 'string' && !isGlob(path);
+    }).map(function(path) {
+      return path + '/**';
+    });
+
     this._userIgnored = anymatchSlashed(
       this._globIgnored.concat(ignored).concat(paths)
     );

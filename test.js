@@ -1448,9 +1448,36 @@ function runTests(baseopts) {
             }));
           });
       });
-      it('allows regex/fn ignores', function(done) {
+      it('allows regex ignores', function(done) {
         options.cwd = fixturesPath;
         options.ignored = /add/;
+        var spy = sinon.spy();
+        var addPath = getFixturePath('add.txt');
+        var changePath = getFixturePath('change.txt');
+        var addArg = {type: 'add', path: changePath};
+        var changeArg = {type: 'change', path: changePath};
+        var ignoredArg = {type: 'add', path: addPath};
+        var ignoredArg2 = {type: 'change', path: addPath};
+        fs.writeFileSync(addPath, 'b');
+        var watcher = chokidar.watch(fixturesPath, options)
+          .on('all', spy)
+          .on('ready', function() {
+            fs.writeFile(addPath, Date.now(), simpleCb);
+            fs.writeFile(changePath, Date.now(), simpleCb);
+            waitFor([spy.withArgs('change', 'change.txt')], function() {
+              spy.should.have.been.calledWith('add', addArg);
+              spy.should.have.been.calledWith('change', changeArg);
+              spy.should.not.have.been.calledWith('add', ignoredArg);
+              spy.should.not.have.been.calledWith('change', ignoredArg2);
+              wClose(watcher);
+              done();
+            });
+          });
+      });
+      it('allows regex fn ignores', function(done) {
+        options.ignored = function(path) {
+          return /add/.test(path);
+        };
         var spy = sinon.spy();
         var addPath = getFixturePath('add.txt');
         var changePath = getFixturePath('change.txt');
