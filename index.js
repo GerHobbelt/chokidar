@@ -424,11 +424,12 @@ FSWatcher.prototype._isIgnored = function(path, stats) {
   }
 
   if (!this._userIgnored) {
+    var cwd = this.options.cwd;
     var ignored;
-    if (this.options.cwd) {
+    if (cwd) {
       ignored = arrify(this.options.ignored).map(function(path) {
         if (typeof path !== 'string') return path;
-        return isAbsolute(path) ? path : sysPath.join(this.options.cwd, path);
+        return isAbsolute(path) ? path : sysPath.join(cwd, path);
       });
     } else {
       ignored = arrify(this.options.ignored);
@@ -438,7 +439,6 @@ FSWatcher.prototype._isIgnored = function(path, stats) {
     }).map(function(path) {
       return path + '/**';
     });
-
     this._userIgnored = anymatchSlashed(
       this._globIgnored.concat(ignored).concat(paths)
     );
