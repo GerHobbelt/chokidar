@@ -29,6 +29,7 @@ var slashStringOrArray = function(stringOrArray) {
       }
     }
   } else {
+    /* istanbul ignore next */
     slashed = stringOrArray;
   }
   return slashed;
@@ -42,6 +43,7 @@ var anymatchSlashed = function() {
   if (arguments[1]) {
     argsNew[1] = slashStringOrArray(arguments[1]);
   }
+  /* istanbul ignore if */
   if (arguments.length > 2) {
     for (var i = 2; i < arguments.length; i++) {
       argsNew.push(arguments[i]);
