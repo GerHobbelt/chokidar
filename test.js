@@ -596,6 +596,50 @@ function runTests(baseopts) {
         });
     });
   });
+  if (baseopts.useFsEvents) {
+    describe('consolidate', function() {
+      it('consolidates watcher when number of watchers exceeds threshold', function(done) {
+        // This test is to satisfy coverage of function couldConsolidate() in lib/fsevents-handler.js.
+        // To test this, create a number of subdirectories beyond the consolidation threshold.
+        // function couldConsolidate() is black-boxed and we cannot directly count the number of watchers.
+        // Instead, we check to see if function couldConsolidate() is covered by nyc/istanbul.
+        var spy = sinon.spy();
+        var subdirRoot = getFixturePath('');
+        var postThreshold = 11;
+        var i = postThreshold;
+        var subdirPath = sysPath.join(subdirRoot, 'subdir' + i);
+        var watchers = [];
+        fs.mkdirSync(subdirPath);
+        while (i--) {
+          subdirPath = sysPath.join(subdirRoot, 'subdir' + i);
+          fs.mkdirSync(subdirPath);
+          var watcher = chokidar.watch(subdirPath, options);
+          watchers.push(watcher);
+          if (i === 0) {
+            var insidePath = sysPath.join(subdirRoot, 'subdir' + i, 'inside.txt'); // Should be spied.
+            var outsidePath = sysPath.join(subdirRoot, 'subdir' + postThreshold, 'outside.txt'); // Should not be spied.
+            var insideArg = {type: 'add', path: insidePath};
+            var outsideArg = {type: 'add', path: outsidePath};
+            watcher
+              .on('all', spy)
+              .on('ready', function() { // eslint-disable-line no-loop-func
+                fs.writeFile(insidePath, Date.now(), simpleCb);
+                fs.writeFile(outsidePath, Date.now(), simpleCb);
+                waitFor([spy.withArgs(outsideArg)], function() {
+                  spy.should.have.been.calledWith('add', insideArg);
+                  spy.should.not.have.been.calledWith('add', outsideArg);
+                  var j = postThreshold;
+                  while (j--) {
+                    wClose(watchers[j]);
+                  }
+                  done();
+                });
+              });
+          }
+        }
+      });
+    });
+  }
   describe('renamed directory', function() {
     it('emits `add` for a file in a renamed directory', function(done) {
       options.ignoreInitial = true;
