@@ -1726,14 +1726,14 @@ function runTests(baseopts) {
           .on('ready', function() {
             fs.writeFile(getFixturePath('change.txt'), Date.now(), function() {
               fs.unlink(getFixturePath('unlink.txt'), simpleCb);
-            });
-            waitFor([spy.withArgs('unlink')], function() {
-              spy.should.have.been.calledWith('add', addArg);
-              spy.should.have.been.calledWith('add', addArg2);
-              spy.should.have.been.calledWith('change', changeArg);
-              if (!osXFsWatch && os === 'darwin') spy.should.have.been.calledWith('unlink', unlinkArg);
-              wClose(watcher);
-              done();
+              waitFor([spy.withArgs('unlink')], function() {
+                spy.should.have.been.calledWith('add', addArg);
+                spy.should.have.been.calledWith('add', addArg2);
+                spy.should.have.been.calledWith('change', changeArg);
+                if (!osXFsWatch && os === 'darwin') spy.should.have.been.calledWith('unlink', unlinkArg);
+                wClose(watcher);
+                done();
+              });
             });
           });
       });
