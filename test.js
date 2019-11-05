@@ -1593,7 +1593,7 @@ function runTests(baseopts) {
         var unlinkDirArg = {type: 'unlinkDir', path: subdirPath2};
         var watcher = stdWatcher()
           .on('all', spy)
-          .on('ready', w(function() {
+          .on('ready', function() { // Not calling w() helps this pass in Linux.
             spy.should.have.been.calledWith('addDir', addDirArg);
             spy.should.have.been.calledWith('addDir', addDirArg2);
             fs.mkdirSync(subdirPath2);
@@ -1607,7 +1607,7 @@ function runTests(baseopts) {
                 done();
               });
             });
-          }));
+          });
       });
     });
     describe('atomic', function() {
