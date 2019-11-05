@@ -439,7 +439,7 @@ function runTests(baseopts) {
           });
         });
     });
-    it('watchs removed and re-added directories', function(done) {
+    it('watches removed and re-added directories', function(done) {
       var unlinkSpy = sinon.spy();
       var addSpy = sinon.spy();
       var parentPath = getFixturePath('subdir2');
@@ -454,7 +454,7 @@ function runTests(baseopts) {
         .on('ready', function() {
           fs.mkdir(parentPath, w(function() {
             fs.rmdirSync(parentPath);
-          }, win32Polling ? 1000 : 300));
+          }, 300));
           waitFor([unlinkSpy], function() {
             unlinkSpy.should.have.been.calledWith(unlinkArg);
             fs.mkdirSync(parentPath);
@@ -1722,37 +1722,6 @@ function runTests(baseopts) {
               wClose(watcher);
               done();
             }, 600)();
-          });
-      });
-      it('allows separate watchers to have different cwds', function(done) {
-        options.cwd = getFixturePath('subdir');
-        var options2 = {};
-        Object.keys(options).forEach(function(key) { options2[key] = options[key]; });
-        options2.cwd = getFixturePath('subdir2');
-        var spy = sinon.spy();
-        var spy2 = sinon.spy();
-        var testPath = sysPath.join(options.cwd, 'add.txt');
-        var testPath2 = sysPath.join(options2.cwd, 'add.txt');
-        var testArg = {type: 'add', path: testPath};
-        var testArg2 = {type: 'add', path: testPath2};
-        fs.mkdirSync(options.cwd);
-        fs.mkdirSync(options2.cwd);
-        var watcher = chokidar.watch('**', options)
-          .on('all', spy)
-          .on('ready', function() {
-            fs.writeFileSync(testPath, Date.now());
-            var watcher2 = chokidar.watch('**', options2)
-              .on('all', spy2)
-              .on('ready', function() {
-                fs.writeFileSync(testPath2, Date.now());
-                waitFor([spy, spy2], function() {
-                  spy.should.have.been.calledWith('add', testArg);
-                  spy2.should.have.been.calledWith('add', testArg2);
-                  wClose(watcher2);
-                  wClose(watcher);
-                  done();
-                });
-              });
           });
       });
       it('ignores files even with cwd', function(done) {
