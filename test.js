@@ -1107,7 +1107,7 @@ function runTests(baseopts) {
       var testPathArg = {type: 'add', path: testPath};
       var watcher = stdWatcher()
         .on('all', spy)
-        .on('ready', function() {
+        .on('ready', w(function() {
           fs.symlinkSync(getFixturePath('subdir'), testDir);
           w(function() {
             spy.should.have.been.calledWith('addDir', testDirArg);
@@ -1115,7 +1115,7 @@ function runTests(baseopts) {
             wClose(watcher);
             done();
           }, 300)();
-        });
+        }));
     });
     it('watches symlinks as files when followSymlinks:false', function(done) {
       options.followSymlinks = false;
@@ -1958,14 +1958,14 @@ function runTests(baseopts) {
         fs.mkdirSync(options.cwd);
         var watcher = stdWatcher()
           .on('all', spy)
-          .on('ready', function() {
+          .on('ready', w(function() {
             fs.writeFileSync(testPath, 'hello');
             waitFor([spy.withArgs('add')], function() {
               spy.should.have.been.calledWith('add', testArg);
               wClose(watcher);
               done();
             });
-          });
+          }));
       });
       it('still emits initial add events', function(done) {
         options.ignoreInitial = false;
