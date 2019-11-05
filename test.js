@@ -263,7 +263,7 @@ function runTests(baseopts) {
         .on('ready', readySpy)
         .on('raw', rawSpy)
         .on('unlinkDir', spy)
-        .on('ready', function() {
+        .on('ready', w(function() {
           fs.rmdirSync(testDir);
           waitFor([spy], function() {
             spy.should.have.been.calledWith(testArg);
@@ -273,7 +273,7 @@ function runTests(baseopts) {
             wClose(watcher);
             done();
           });
-        });
+        }));
     });
     it('emits `unlink` and `add` events when a file is renamed', function(done) {
       var unlinkSpy = sinon.spy();
