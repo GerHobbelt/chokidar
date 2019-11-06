@@ -47,7 +47,7 @@ var anymatchSlashed = function() {
       argsNew.push(arguments[i]);
     }
   }
-  return anymatch.apply(null, argsNew);
+  return anymatch.apply(null, argsNew, {strictSlashes: true});
 };
 
 var arrify = function(value) {
