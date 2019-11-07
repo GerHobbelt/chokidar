@@ -171,7 +171,7 @@ function runTests(baseopts) {
         done();
       });
     });
-    it('emits `add` event when file was added', function(done) {
+    it('emits `add` event when file is added', function(done) {
       var spy = sinon.spy();
       var testPath = getFixturePath('add.txt');
       var testArg = {type: 'add', path: testPath};
@@ -191,7 +191,7 @@ function runTests(baseopts) {
           });
         }));
     });
-    it('emits `addDir` event when directory was added', function(done) {
+    it('emits `addDir` event when directory is added', function(done) {
       var spy = sinon.spy();
       var testDir = getFixturePath('subdir');
       var testArg = {type: 'addDir', path: testDir};
@@ -212,7 +212,7 @@ function runTests(baseopts) {
           });
         }));
     });
-    it('emits `change` event when file was changed', function(done) {
+    it('emits `change` event when file is changed', function(done) {
       var spy = sinon.spy();
       var testPath = getFixturePath('change.txt');
       var testArg = {type: 'change', path: testPath};
@@ -233,7 +233,7 @@ function runTests(baseopts) {
           });
         }));
     });
-    it('emits `unlink` event when file was removed', function(done) {
+    it('emits `unlink` event when file is removed', function(done) {
       var spy = sinon.spy();
       var testPath = getFixturePath('unlink.txt');
       var testArg = {type: 'unlink', path: testPath};
@@ -254,7 +254,7 @@ function runTests(baseopts) {
           });
         }));
     });
-    it('emits `unlinkDir` event when a directory was removed', function(done) {
+    it('emits `unlinkDir` event when a directory is removed', function(done) {
       var spy = sinon.spy();
       var testDir = getFixturePath('subdir');
       var testArg = {type: 'unlinkDir', path: testDir};
@@ -306,7 +306,7 @@ function runTests(baseopts) {
           }, 300)();
         }));
     });
-    it('emits `unlinkDir` when a directory was renamed', function(done) {
+    it('emits `unlinkDir` when a directory is renamed', function(done) {
       var unlinkDirSpy = sinon.spy();
       var testDir = getFixturePath('subdir');
       var testDir2 = getFixturePath('subdir2');
@@ -327,7 +327,7 @@ function runTests(baseopts) {
         }));
     });
     if (!baseopts.useFsEvents && !baseopts.usePolling) {
-      it('emits `unlinkDir` when a directory was renamed and renamed back to its original name', function(done) {
+      it('emits `unlinkDir` when a directory is renamed and renamed back to its original name', function(done) {
         var unlinkDirSpy = sinon.spy();
         var testDir = getFixturePath('subdir');
         var testDir2 = getFixturePath('subdir2');
@@ -1720,13 +1720,13 @@ function runTests(baseopts) {
               .on('all', spy2)
               .on('ready', w(function() {
                 fs.writeFileSync(testPath2, Date.now());
-                waitFor([spy, spy2], function() {
+                w(function() {
                   spy.should.have.been.calledWith('add', testArg);
                   spy2.should.have.been.calledWith('add', testArg2);
                   wClose(watcher2);
                   wClose(watcher);
                   done();
-                });
+                }, 100)();
               }));
           }));
       });
