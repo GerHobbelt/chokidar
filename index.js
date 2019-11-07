@@ -8,7 +8,6 @@ var asyncEach = require('async-each');
 var anymatch = require('anymatch');
 var globParent = require('glob-parent');
 var isGlob = require('is-glob');
-var isAbsolute = require('path-is-absolute');
 var inherits = require('inherits');
 var slash = require('slash');
 
@@ -364,7 +363,7 @@ FSWatcher.prototype._awaitWriteFinish = function(path, threshold, event, awfEmit
   var timeoutHandler;
 
   var fullPath = path;
-  if (this.options.cwd && !isAbsolute(path)) {
+  if (this.options.cwd && !sysPath.isAbsolute(path)) {
     fullPath = sysPath.join(this.options.cwd, path);
   }
 
@@ -432,7 +431,7 @@ FSWatcher.prototype._isIgnored = function(path, stats) {
     if (cwd) {
       ignored = arrify(this.options.ignored).map(function(path) {
         if (typeof path !== 'string') return path;
-        return isAbsolute(path) ? path : sysPath.join(cwd, path);
+        return sysPath.isAbsolute(path) ? path : sysPath.join(cwd, path);
       });
     } else {
       ignored = arrify(this.options.ignored);
@@ -515,7 +514,9 @@ FSWatcher.prototype._getWatchHelpers = function(path_, depth) {
   }.bind(this);
 
   var filterPath = function(entry) {
-    if (entry.stats && entry.stats.isSymbolicLink()) return filterDir(entry);
+    if (entry.stats && entry.stats.isSymbolicLink()) {
+      return filterDir(entry);
+    }
     var resolvedPath = entryPath(entry);
     return (!hasGlob || globFilter(resolvedPath)) &&
       this._isntIgnored(resolvedPath, entry.stats) &&
@@ -668,7 +669,7 @@ FSWatcher.prototype.add = function(paths, _origAdd, _internal) {
 
   if (cwd) _paths = _paths.map(function(path) {
     var absPath;
-    if (isAbsolute(path)) {
+    if (sysPath.isAbsolute(path)) {
       absPath = path;
     } else if (path[0] === '!') {
       absPath = '!' + sysPath.join(cwd, path.substring(1));
@@ -736,7 +737,7 @@ FSWatcher.prototype.unwatch = function(paths) {
   _paths.forEach(function(path_) {
     // convert to absolute path unless relative path already matches
     var path = path_;
-    if (!isAbsolute(path) && !this._closers[path]) {
+    if (!sysPath.isAbsolute(path) && !this._closers[path]) {
       if (this.options.cwd) path = sysPath.join(this.options.cwd, path);
       path = sysPath.resolve(path);
     }
