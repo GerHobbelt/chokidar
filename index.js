@@ -576,7 +576,13 @@ FSWatcher.prototype._getWatchedDir = function(directory) {
 //
 // Returns boolean
 FSWatcher.prototype._hasReadPermissions = function(stats) {
-  return Boolean(4 & parseInt(((stats && stats.mode) & 0x1ff).toString(8)[0], 10));
+  if (this.options.ignorePermissionErrors) return true;
+
+  // stats.mode may be bigint
+  var md = stats && Number.parseInt(stats.mode, 10);
+  var st = md & parseInt('777', 8);
+  var it = Number.parseInt(st.toString(8)[0], 10);
+  return Boolean(4 & it);
 };
 
 // Private method: Handles emitting unlink events for
