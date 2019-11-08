@@ -437,7 +437,7 @@ FSWatcher.prototype._isIgnored = function(path, stats) {
       ignored = arrify(this.options.ignored);
     }
     var paths = ignored.filter(function(path) {
-      return typeof path === 'string' && !isGlob(path);
+      return typeof path === 'string' && !isGlob(slash(path));
     }).map(function(path) {
       return path + '/**';
     });
@@ -460,7 +460,7 @@ FSWatcher.prototype._isIgnored = function(path, stats) {
 var replacerRe = /^\.[\/\\]/;
 FSWatcher.prototype._getWatchHelpers = function(path_, depth) {
   var path = path_.replace(replacerRe, '');
-  var watchPath = depth || this.options.disableGlobbing || !isGlob(path) ? path : globParent(path);
+  var watchPath = depth || this.options.disableGlobbing || !isGlob(slash(path)) ? path : globParent(path);
   var fullWatchPath = sysPath.resolve(watchPath);
   var hasGlob = watchPath !== path;
   var globFilter = hasGlob ? anymatchSlashed(path) : false;
