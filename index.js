@@ -1,22 +1,18 @@
 'use strict';
+
 var EventEmitter = require('events').EventEmitter;
 var fs = require('fs');
-var os = require('os');
 var sysPath = require('path');
 
 var asyncEach = require('async-each');
 var anymatch = require('anymatch');
 var globParent = require('glob-parent');
 var isGlob = require('is-glob');
-var isAbsolute = require('path-is-absolute');
 var inherits = require('inherits');
 var slash = require('slash');
 
 var NodeFsHandler = require('./lib/nodefs-handler');
 var FsEventsHandler = require('./lib/fsevents-handler');
-
-var osMajor = parseInt(os.release().split('.')[0], 10);
-var isDarwin = process.platform === 'darwin';
 
 var slashStringOrArray = function(stringOrArray) {
   var slashed;
@@ -32,6 +28,7 @@ var slashStringOrArray = function(stringOrArray) {
       }
     }
   } else {
+    /* istanbul ignore next */
     slashed = stringOrArray;
   }
   return slashed;
@@ -45,12 +42,13 @@ var anymatchSlashed = function() {
   if (arguments[1]) {
     argsNew[1] = slashStringOrArray(arguments[1]);
   }
+  /* istanbul ignore if */
   if (arguments.length > 2) {
     for (var i = 2; i < arguments.length; i++) {
       argsNew.push(arguments[i]);
     }
   }
-  return anymatch.apply(null, argsNew);
+  return anymatch.apply(null, argsNew, {strictSlashes: true});
 };
 
 var arrify = function(value) {
@@ -122,14 +120,9 @@ function FSWatcher(_opts) {
   if (undef('disableGlobbing')) opts.disableGlobbing = false;
   this.enableBinaryInterval = opts.binaryInterval !== opts.interval;
 
-  // Darwin major version 15 is macOS 10.11 El Capitan.
-  // fsevents does not work in 10.11 El Capitan and lower.
-  /* istanbul ignore next */
-  if (isDarwin && osMajor <= 15) {
-    opts.useFsEvents = false;
-
   // If we can't use fsevents, ensure the options reflect it's disabled.
-  } else if (!FsEventsHandler.canUse()) {
+  /* istanbul ignore next */
+  if (!FsEventsHandler.canUse()) {
     opts.useFsEvents = false;
 
   // Enable fsevents on OS X when polling isn't explicitly enabled.
@@ -141,7 +134,7 @@ function FSWatcher(_opts) {
   // Other platforms use non-polling fs.watch.
   /* istanbul ignore if */
   if (undef('usePolling') && !opts.useFsEvents) {
-    opts.usePolling = isDarwin;
+    opts.usePolling = process.platform === 'darwin';
   }
 
   // Global override (useful for end-developers that need to force polling for all
@@ -177,7 +170,6 @@ function FSWatcher(_opts) {
 
     this._pendingWrites = Object.create(null);
   }
-  if (opts.ignored) opts.ignored = arrify(opts.ignored);
 
   this._isntIgnored = function(path, stat) {
     return !this._isIgnored(path, stat);
@@ -371,7 +363,7 @@ FSWatcher.prototype._awaitWriteFinish = function(path, threshold, event, awfEmit
   var timeoutHandler;
 
   var fullPath = path;
-  if (this.options.cwd && !isAbsolute(path)) {
+  if (this.options.cwd && !sysPath.isAbsolute(path)) {
     fullPath = sysPath.join(this.options.cwd, path);
   }
 
@@ -379,6 +371,7 @@ FSWatcher.prototype._awaitWriteFinish = function(path, threshold, event, awfEmit
 
   var awaitWriteFinish = (function(prevStat) {
     fs.stat(fullPath, function(err, curStat) {
+      /* istanbul ignore if */
       if (err || !(path in this._pendingWrites)) {
         if (err && err.code !== 'ENOENT') awfEmit(err);
         return;
@@ -434,19 +427,20 @@ FSWatcher.prototype._isIgnored = function(path, stats) {
 
   if (!this._userIgnored) {
     var cwd = this.options.cwd;
-    var ignored = this.options.ignored;
-    if (cwd && ignored) {
-      ignored = ignored.map(function(path) {
+    var ignored;
+    if (cwd) {
+      ignored = arrify(this.options.ignored).map(function(path) {
         if (typeof path !== 'string') return path;
-        return isAbsolute(path) ? path : sysPath.join(cwd, path);
+        return sysPath.isAbsolute(path) ? path : sysPath.join(cwd, path);
       });
+    } else {
+      ignored = arrify(this.options.ignored);
     }
-    var paths = arrify(ignored)
-      .filter(function(path) {
-        return typeof path === 'string' && !isGlob(path);
-      }).map(function(path) {
-        return path + '/**';
-      });
+    var paths = ignored.filter(function(path) {
+      return typeof path === 'string' && !isGlob(slash(path));
+    }).map(function(path) {
+      return path + '/**';
+    });
     this._userIgnored = anymatchSlashed(
       this._globIgnored.concat(ignored).concat(paths)
     );
@@ -466,7 +460,7 @@ FSWatcher.prototype._isIgnored = function(path, stats) {
 var replacerRe = /^\.[\/\\]/;
 FSWatcher.prototype._getWatchHelpers = function(path_, depth) {
   var path = path_.replace(replacerRe, '');
-  var watchPath = depth || this.options.disableGlobbing || !isGlob(path) ? path : globParent(path);
+  var watchPath = depth || this.options.disableGlobbing || !isGlob(slash(path)) ? path : globParent(path);
   var fullWatchPath = sysPath.resolve(watchPath);
   var hasGlob = watchPath !== path;
   var globFilter = hasGlob ? anymatchSlashed(path) : false;
@@ -516,15 +510,17 @@ FSWatcher.prototype._getWatchHelpers = function(path_, depth) {
         return globstar || !entryParts[i] || anymatchSlashed(part, entryParts[i]);
       });
     }
-    return !unmatchedGlob && this._isntIgnored(entryPath(entry), entry.stat);
+    return !unmatchedGlob && this._isntIgnored(entryPath(entry), entry.stats);
   }.bind(this);
 
   var filterPath = function(entry) {
-    if (entry.stat && entry.stat.isSymbolicLink()) return filterDir(entry);
+    if (entry.stats && entry.stats.isSymbolicLink()) {
+      return filterDir(entry);
+    }
     var resolvedPath = entryPath(entry);
     return (!hasGlob || globFilter(resolvedPath)) &&
-      this._isntIgnored(resolvedPath, entry.stat) &&
-      (this.options.ignorePermissionErrors || this._hasReadPermissions(entry.stat));
+      this._isntIgnored(resolvedPath, entry.stats) &&
+      (this.options.ignorePermissionErrors || this._hasReadPermissions(entry.stats));
   }.bind(this);
 
   return {
@@ -580,7 +576,13 @@ FSWatcher.prototype._getWatchedDir = function(directory) {
 //
 // Returns boolean
 FSWatcher.prototype._hasReadPermissions = function(stats) {
-  return Boolean(4 & parseInt(((stats && stats.mode) & 0x1ff).toString(8)[0], 10));
+  if (this.options.ignorePermissionErrors) return true;
+
+  // stats.mode may be bigint
+  var md = stats && Number.parseInt(stats.mode, 10);
+  var st = md & parseInt('777', 8);
+  var it = Number.parseInt(st.toString(8)[0], 10);
+  return Boolean(4 & it);
 };
 
 // Private method: Handles emitting unlink events for
@@ -673,7 +675,7 @@ FSWatcher.prototype.add = function(paths, _origAdd, _internal) {
 
   if (cwd) _paths = _paths.map(function(path) {
     var absPath;
-    if (isAbsolute(path)) {
+    if (sysPath.isAbsolute(path)) {
       absPath = path;
     } else if (path[0] === '!') {
       absPath = '!' + sysPath.join(cwd, path.substring(1));
@@ -741,7 +743,7 @@ FSWatcher.prototype.unwatch = function(paths) {
   _paths.forEach(function(path_) {
     // convert to absolute path unless relative path already matches
     var path = path_;
-    if (!isAbsolute(path) && !this._closers[path]) {
+    if (!sysPath.isAbsolute(path) && !this._closers[path]) {
       if (this.options.cwd) path = sysPath.join(this.options.cwd, path);
       path = sysPath.resolve(path);
     }

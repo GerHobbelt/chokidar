@@ -6,11 +6,12 @@ node_js:
   - "8"
   - "10"
   - "12"
-after_script:
-  - npm run coverage
+# after_script:
+  # Run `npm run coverage` locally to submit coverage data to coveralls.io.
+  # Be sure to have a .coveralls.yml file with valid token.
 branches:
   only:
   - npm
   - v1-lts
   # After releasing, bump to next anticpated version.
-  - v1-lts@1.7.9
+  - v1-lts@1.7.10

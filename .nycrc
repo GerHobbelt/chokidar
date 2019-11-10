@@ -1,0 +1,6 @@
+{
+  "exclude": [
+    "test-fixtures",
+    "test.js"
+  ]
+}
