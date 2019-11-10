@@ -1966,12 +1966,12 @@ function runTests(baseopts) {
           .on('all', spy)
           .on('ready', w(function() {
             fs.writeFileSync(testPath, 'hello');
-            w(function() {
+            waitFor([spy.withArgs('add')], function() {
               spy.should.have.been.calledWith('add', testArg);
               wClose(watcher);
               done();
-            }, 600)();
-          }));
+            });
+          }, 300));
       });
       it('still emits initial add events', function(done) {
         options.ignoreInitial = false;
