@@ -1971,7 +1971,7 @@ function runTests(baseopts) {
               wClose(watcher);
               done();
             });
-          }));
+          }, 600));
       });
       it('still emits initial add events', function(done) {
         options.ignoreInitial = false;
