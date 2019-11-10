@@ -1970,7 +1970,7 @@ function runTests(baseopts) {
               spy.should.have.been.calledWith('add', testArg);
               wClose(watcher);
               done();
-            }, 300)();
+            }, 600)();
           }));
       });
       it('still emits initial add events', function(done) {
