@@ -1,5 +1,7 @@
 # Chokidar Changelog
 
+### 1.7.11
+
 ### 1.7.10
 * Checking that macOS > El Capitan in FsEventsHandler.canUse instead of index.js
 * Updated anymatch to major version 3
