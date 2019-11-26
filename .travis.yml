@@ -11,6 +11,7 @@ node_js:
   # Be sure to have a .coveralls.yml file with valid token.
 branches:
   only:
+  - dev
   - npm
   - v1-lts
   # After releasing, bump to next anticpated version.
