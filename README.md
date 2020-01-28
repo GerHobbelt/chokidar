@@ -6,7 +6,6 @@
 [![Mac/Linux Build Status][travis-image]][travis-url]
 [![Windows Build Status][appveyor-image]][appveyor-url]
 [![Coverage Status][coveralls-image]][coveralls-url]
-![Node Version][node-version-image]
 [![License][license-image]][license-url]
 
 ### This package provides long-term support for Chokidar at major version 1.
@@ -326,8 +325,6 @@ project, which may otherwise be burdensome for them to commit time to.
 
 [coveralls-image]: https://img.shields.io/coveralls/electric-eloquence/chokidar/v1-lts.svg
 [coveralls-url]: https://coveralls.io/github/electric-eloquence/chokidar?branch=v1-lts
-
-[node-version-image]: https://img.shields.io/node/v/@electric-eloquence/chokidar.svg
 
 [license-image]: https://img.shields.io/github/license/electric-eloquence/chokidar.svg
 [license-url]: https://raw.githubusercontent.com/electric-eloquence/chokidar/v1-lts/LICENSE
