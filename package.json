@@ -1,15 +1,22 @@
 {
   "name": "@electric-eloquence/chokidar",
-  "description": "A neat wrapper around node.js fs.watch / fs.watchFile / fsevents.",
+  "description": "A neat wrapper around node.js fs.watch / fs.watchFile / fsevents. With long-term support at v1.",
   "version": "1.7.11",
   "keywords": [
+    "file",
     "fs",
+    "fsevents",
+    "gulp",
+    "gulp 3",
+    "long",
+    "long-term",
+    "long-term support",
+    "lts",
+    "term",
     "watch",
     "watchFile",
     "watcher",
-    "watching",
-    "file",
-    "fsevents"
+    "watching"
   ],
   "homepage": "https://github.com/electric-eloquence/chokidar",
   "author": "Paul Miller (http://paulmillr.com), Elan Shanker",
