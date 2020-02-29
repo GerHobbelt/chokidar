@@ -1,6 +1,6 @@
 {
   "name": "@electric-eloquence/chokidar",
-  "description": "A neat wrapper around node.js fs.watch / fs.watchFile / fsevents. With long-term support at v1.",
+  "description": "A neat wrapper around node.js fs.watch / fs.watchFile / fsevents (v1 with long-term support)",
   "version": "1.7.11",
   "keywords": [
     "file",
