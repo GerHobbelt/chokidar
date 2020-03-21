@@ -1,4 +1,4 @@
-# Chokidar
+# Chokidar 1 LTS
 
 > A neat wrapper around node.js fs.watch / fs.watchFile / fsevents.
 
