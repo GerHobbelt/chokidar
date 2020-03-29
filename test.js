@@ -72,7 +72,7 @@ afterEach(function() {
 });
 
 describe('chokidar', function() {
-  this.timeout(6000);
+  this.timeout(10000);
   it('exposes public API methods', function() {
     chokidar.FSWatcher.should.be.a('function');
     chokidar.watch.should.be.a('function');
@@ -133,7 +133,7 @@ function runTests(baseopts) {
     intrvl = setInterval(function() {
       if (spies.every(isSpyReady)) finish();
     }, 5);
-    to = setTimeout(finish, 3500);
+    to = setTimeout(finish, 5000);
   }
 
   function wClose(watcher) {
@@ -518,7 +518,7 @@ function runTests(baseopts) {
               done();
             });
           });
-        }));
+        }, 1500));
     });
     it('ignores unwatched siblings', function(done) {
       var spy = sinon.spy();
@@ -2301,7 +2301,7 @@ process.stdout.write("closed");\n\
               spy.should.have.been.called;
               wClose(watcher);
               done();
-            })();
+            }, 300)();
           }));
       });
     }
