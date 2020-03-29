@@ -133,7 +133,7 @@ function runTests(baseopts) {
     intrvl = setInterval(function() {
       if (spies.every(isSpyReady)) finish();
     }, 5);
-    to = setTimeout(finish, 5000);
+    to = setTimeout(finish, 8000);
   }
 
   function wClose(watcher) {
