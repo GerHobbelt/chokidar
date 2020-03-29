@@ -1078,7 +1078,11 @@ function runTests(baseopts) {
     });
     it('does not recurse indefinitely on circular symlinks', function(done) {
       fs.symlinkSync(fixturesPath, getFixturePath('subdir/circular'));
-      stdWatcher().on('ready', done);
+      var watcher = stdWatcher()
+        .on('ready', function() {
+          wClose(watcher);
+          done();
+        });
     });
     it('recognizes changes following symlinked dirs', function(done) {
       var spy = sinon.spy();
