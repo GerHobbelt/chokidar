@@ -43,7 +43,7 @@
     "coveralls": "3.x",
     "eslint": "6.x",
     "graceful-fs": "^4.2.3",
-    "mocha": "7.x",
+    "mocha": "8.x",
     "nyc": "15.x",
     "rimraf": "^3.0.0",
     "sinon": "8.x",
