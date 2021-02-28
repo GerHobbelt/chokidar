@@ -6,7 +6,7 @@ var sysPath = require('path');
 
 var asyncEach = require('async-each');
 var anymatch = require('anymatch');
-var globParent = require('glob-parent');
+var glob = require('glob');
 var isGlob = require('is-glob');
 var inherits = require('inherits');
 var slash = require('slash');
@@ -459,12 +459,39 @@ FSWatcher.prototype._isIgnored = function(path, stats) {
 // eslint-disable-next-line no-useless-escape
 var replacerRe = /^\.[\/\\]/;
 FSWatcher.prototype._getWatchHelpers = function(path_, depth) {
+  var follow = this.options.followSymlinks;
   var path = path_.replace(replacerRe, '');
-  var watchPath = depth || this.options.disableGlobbing || !isGlob(slash(path)) ? path : globParent(path);
+  var watchPath = path;
+
+  // flip windows path separators where backslashes are not intentional escape characters
+  if (process.platform === 'win32' && path.indexOf('/') === -1) {
+    path = slash(path);
+  }
+
+  if (!depth && !this.options.disableGlobbing && isGlob(path)) {
+    var globSplit = path.split('/');
+    var globMatches = glob.sync(path);
+    var globParent = '';
+    var globParentCandidate = '';
+
+    if (globMatches.length) {
+      for (var i = 0; i < globSplit.length; i++) {
+        globParentCandidate += globSplit[i] + '/';
+
+        if (globMatches[0].indexOf(globParentCandidate) === 0) {
+          globParent = globParentCandidate;
+        } else {
+          break;
+        }
+      }
+    }
+
+    watchPath = globParent;
+  }
+
   var fullWatchPath = sysPath.resolve(watchPath);
   var hasGlob = watchPath !== path;
   var globFilter = hasGlob ? anymatchSlashed(path) : false;
-  var follow = this.options.followSymlinks;
   var globSymlink = hasGlob && follow ? null : false;
 
   var checkGlobSymlink = function(entry) {
