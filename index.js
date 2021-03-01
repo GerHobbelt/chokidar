@@ -463,6 +463,7 @@ FSWatcher.prototype._getWatchHelpers = function(path_, depth) {
   var watchPath = path;
 
   // flip windows path separators where backslashes are not intentional escape characters
+  /* istanbul ignore if */
   if (process.platform === 'win32' && path.indexOf('/') === -1) {
     path = slash(path);
   }
