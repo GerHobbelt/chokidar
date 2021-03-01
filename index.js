@@ -6,7 +6,6 @@ var sysPath = require('path');
 
 var asyncEach = require('async-each');
 var anymatch = require('anymatch');
-var glob = require('glob');
 var isGlob = require('is-glob');
 var inherits = require('inherits');
 var slash = require('slash');
@@ -469,24 +468,16 @@ FSWatcher.prototype._getWatchHelpers = function(path_, depth) {
   }
 
   if (!depth && !this.options.disableGlobbing && isGlob(path)) {
-    var globSplit = path.split('/');
-    var globMatches = glob.sync(path);
     var globParent = '';
-    var globParentCandidate = '';
-
-    if (globMatches.length) {
-      for (var i = 0; i < globSplit.length; i++) {
-        globParentCandidate += globSplit[i] + '/';
-
-        if (globMatches[0].indexOf(globParentCandidate) === 0) {
-          globParent = globParentCandidate;
-        } else {
-          break;
-        }
+    var globSplit = path.split('/');
+    for (var i = 0; i < globSplit.length; i++) {
+      if (isGlob(globSplit[i])) {
+        break;
+      } else {
+        globParent += globSplit[i] + '/';
       }
     }
-
-    watchPath = globParent;
+    watchPath = globParent || './';
   }
 
   var fullWatchPath = sysPath.resolve(watchPath);
