@@ -460,17 +460,18 @@ var replacerRe = /^\.[\/\\]/;
 FSWatcher.prototype._getWatchHelpers = function(path_, depth) {
   var follow = this.options.followSymlinks;
   var path = path_.replace(replacerRe, '');
+  var globCandidate = path;
   var watchPath = path;
 
   // flip windows path separators where backslashes are not intentional escape characters
   /* istanbul ignore if */
   if (process.platform === 'win32' && path.indexOf('/') === -1) {
-    path = slash(path);
+    globCandidate = slash(path);
   }
 
-  if (!depth && !this.options.disableGlobbing && isGlob(path)) {
+  if (!depth && !this.options.disableGlobbing && isGlob(globCandidate)) {
     var globParent = '';
-    var globSplit = path.split('/');
+    var globSplit = globCandidate.split('/');
     for (var i = 0; i < globSplit.length; i++) {
       if (isGlob(globSplit[i])) {
         break;

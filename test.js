@@ -1038,6 +1038,7 @@ function runTests(baseopts) {
           });
         }));
     });
+    // This test requires readdirp to be fixed to v3.4.0.
     it('does not recurse indefinitely on circular symlinks', function(done) {
       fs.symlinkSync(fixturePath, getFixturePath('subdir/circular'));
       var watcher = stdWatcher()
