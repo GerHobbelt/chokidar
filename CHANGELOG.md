@@ -1,6 +1,7 @@
 # Chokidar Changelog
 
 ### 1.7.11
+* Removed glob-parent dependency and its regex dos vulnerability
 
 ### 1.7.10
 * Checking that macOS > El Capitan in FsEventsHandler.canUse instead of index.js
